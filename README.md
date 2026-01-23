@@ -51,7 +51,7 @@ U linijama _var snaga = 10_ i _var zlato = 0_, definišemo globalne registre.
 Zlato služi kao skor (score). To je varijabla koju igrač želi da poveća.
 Snaga služi kao resurs. To je varijabla koja ograničava šta igrač može da uradi.
 ### 4.2. "Mač" i mehanika težine
-U gramatici smo definisali: _item Mac weight 15_. Kada igrač izabere opciju: _option "Uzmi mac" goto Hodnik take Mac set zlato = 100_
+U gramatici je definisano: _item Mac weight 15_. Kada igrač izabere opciju: _option "Uzmi mac" goto Hodnik take Mac set zlato = 100_
 dešavaju se tri stvari odjednom:
 - Promjena lokacije: Igrač se seli u Hodnik.
 - Inventory update: U listu predmeta mu se dodaje Mac .
