@@ -2,8 +2,7 @@ from src.core.model import load_model
 import os
 
 def main():
-    # Putanja do primera
-    path = os.path.join(os.path.dirname(__file__), 'examples/adventure.story')
+    path = os.path.join(os.path.dirname(__file__), 'examples/lostTemple.story')
     
     try:
         model = load_model(path)
