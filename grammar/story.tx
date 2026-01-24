@@ -1,0 +1,10 @@
+StoryModel:
+    rooms+=Room
+;
+
+Room:
+    'room' name=ID '{'
+        'header' header=STRING
+        'body' body=STRING
+    '}'
+;
