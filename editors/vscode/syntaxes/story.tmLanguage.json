@@ -1,0 +1,36 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "StoryScript",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#keywords" },
+        { "include": "#strings" },
+        { "include": "#numbers" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [{
+                "name": "comment.line.double-slash.story",
+                "match": "//.*$"
+            }]
+        },
+        "keywords": {
+            "patterns": [{
+                "name": "keyword.control.story",
+                "match": "\\b(room|item|var|option|goto|take|set)\\b"
+            }]
+        },
+        "strings": {
+            "name": "string.quoted.double.story",
+            "begin": "\"",
+            "end": "\""
+        },
+        "numbers": {
+            "patterns": [{
+                "name": "constant.numeric.story",
+                "match": "\\b\\d+\\b"
+            }]
+        }
+    },
+    "scopeName": "source.story"
+}

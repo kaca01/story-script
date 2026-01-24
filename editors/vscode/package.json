@@ -19,6 +19,11 @@
             "aliases": ["StoryScript", "story"],
             "extensions": [".story"],
             "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "story",
+            "scopeName": "source.story",
+            "path": "./syntaxes/story.tmLanguage.json"
         }]
     }
 }
