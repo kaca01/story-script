@@ -21,7 +21,7 @@ room Corridor {
     body "The ground is shaking. You must be fast."
     
     option "Run to the exit" [strength > 5] goto Surface
-    option "Crawl slowly" goto Surface set strength = 2
+    option "Crawl slowly" goto LostGame set strength = 2
 }
 
 room Surface {
@@ -29,4 +29,11 @@ room Surface {
     header "Freedom"
     body "You have exited the temple. Congratulations!"
     option "End" goto Surface
+}
+
+room LostGame {
+    imagePath ""
+    header "Game end"
+    body "You have lost the game. Better luck next time"
+    option "end" goto LostGame
 }
