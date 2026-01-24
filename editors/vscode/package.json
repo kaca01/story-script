@@ -14,16 +14,34 @@
     ],
     "main": "./client.js",
     "contributes": {
-        "languages": [{
-            "id": "story",
-            "aliases": ["StoryScript", "story"],
-            "extensions": [".story"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "story",
-            "scopeName": "source.story",
-            "path": "./syntaxes/story.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "story",
+                "aliases": [
+                    "StoryScript",
+                    "story"
+                ],
+                "extensions": [
+                    ".story"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "story",
+                "scopeName": "source.story",
+                "path": "./syntaxes/story.tmLanguage.json"
+            }
+        ]
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "vscode-languageclient": "^9.0.1"
     }
 }
