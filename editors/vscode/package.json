@@ -1,0 +1,24 @@
+{
+    "name": "story-script",
+    "displayName": "StoryScript",
+    "description": "LSP for StoryScript language",
+    "version": "0.1.0",
+    "engines": {
+        "vscode": "^1.70.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:story"
+    ],
+    "main": "./client.js",
+    "contributes": {
+        "languages": [{
+            "id": "story",
+            "aliases": ["StoryScript", "story"],
+            "extensions": [".story"],
+            "configuration": "./language-configuration.json"
+        }]
+    }
+}
