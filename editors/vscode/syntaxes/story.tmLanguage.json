@@ -4,8 +4,11 @@
     "patterns": [
         { "include": "#comments" },
         { "include": "#keywords" },
+        { "include": "#entity" },
+        { "include": "#control" },
         { "include": "#strings" },
-        { "include": "#numbers" }
+        { "include": "#numbers" },
+        { "include": "#operator" }
     ],
     "repository": {
         "comments": {
@@ -16,8 +19,20 @@
         },
         "keywords": {
             "patterns": [{
-                "name": "keyword.control.story",
-                "match": "\\b(room|item|var|option|goto|take|set)\\b"
+                "name": "keyword.declaration.story",
+                "match": "\\b(adventure|room|item|var)\\b"
+            }]
+        },
+         "entity": {
+            "patterns": [{
+                "name": "entity.other.attribute-name.story",
+                "match": "\\b(imagePath|header|body|option)\\b"
+            }]
+        },
+         "control": {
+            "patterns": [{
+                "name": "keyword.control.action.story",
+                "match": "\\b(goto|take|set|weight)\\b"
             }]
         },
         "strings": {
@@ -29,6 +44,12 @@
             "patterns": [{
                 "name": "constant.numeric.story",
                 "match": "\\b\\d+\\b"
+            }]
+        },
+        "operator": {
+            "patterns": [{
+               "name": "keyword.operator.comparison.story",
+                "match": "(>|<|==|>=|<=|=)"
             }]
         }
     },
