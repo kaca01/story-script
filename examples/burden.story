@@ -9,6 +9,8 @@ room Dungeon {
     imagePath "assets/dungeon.png"
     header "Deep Dungeon"
     body "You are holding a boulder. You feel very weak."
+
+   // strength is lower then 5
     option "Climb the rope" [strength > 5] goto Surface
     option "Drop everything" goto Dungeon set strength = 10
 }
