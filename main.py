@@ -1,3 +1,4 @@
+from src.interpreter.engine import run_engine
 from src.core.model import load_model
 import os
 
@@ -13,4 +14,5 @@ def main():
         print(f"❌ Greška: {e}")
 
 if __name__ == "__main__":
-    main()
+    # main()
+    run_engine()

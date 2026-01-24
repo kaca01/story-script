@@ -28,6 +28,10 @@ Option:
 
 Condition:
     '[' var_name=[Variable] op=Operator val=INT ']'
+    // TODO: add explanation for the consequences
+    // because otherwise, there will be just option with no explanation
+    // why the user cannot open the door and go to the next room
+    // e.g. you are too weak, can't open the door
 ;
 
 Action:
