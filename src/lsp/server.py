@@ -6,6 +6,7 @@ from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION,
                               CompletionParams)
 from lsprotocol.types import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN,
                               Diagnostic, Position, Range)
+from lsprotocol.types import (TEXT_DOCUMENT_DEFINITION, Location)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from src.core.model import get_metamodel
@@ -16,6 +17,46 @@ try:
     metamodel = get_metamodel()
 except Exception as e:
     metamodel = None
+
+# definition
+@server.feature(TEXT_DOCUMENT_DEFINITION)
+def definition(ls, params):
+    text_doc = ls.workspace.get_text_document(params.text_document.uri)
+    source = text_doc.source
+    
+    line_num = params.position.line
+    col_num = params.position.character
+    lines = source.splitlines()
+    if line_num >= len(lines): return None
+    
+    import re
+    line = lines[line_num]
+    word = re.findall(r'\w+', line)
+    target_word = ""
+    for w in word:
+        start = line.find(w)
+        if start <= col_num <= start + len(w):
+            target_word = w
+            break
+
+    if not target_word: return None
+
+    try:
+        model = metamodel.model_from_str(source)
+        for room in model.rooms:
+            if room.name == target_word:
+                for idx, l in enumerate(lines):
+                    if f"room {target_word}" in l:
+                        return Location(
+                            uri=params.text_document.uri,
+                            range=Range(
+                                start=Position(line=idx, character=0),
+                                end=Position(line=idx, character=len(l))
+                            )
+                        )
+    except:
+        pass
+    return None
 
 # autocomplete
 @server.feature(TEXT_DOCUMENT_COMPLETION)
