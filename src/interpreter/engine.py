@@ -1,8 +1,8 @@
 from src.core.model import load_model
-from src.interpreter.helper.helper_functions import parse_operator
+from src.interpreter.helper.helper_functions import parse_operator, evaluate_expression
 import os
 
-
+# TODO: rules are not implemented
 class StoryEngine:
     def __init__(self):
         self.variables = {}
@@ -36,12 +36,27 @@ class StoryEngine:
         available_options = self.filter_available_options(options)
         print("Your options are: ")
         i = 0
-        for option in options:
+        for option in available_options:
             i += 1
             print(str(i) + " - " + option.text + " go to " + option.target.header)
         inp = int(input("Select an option: "))
-        selected_option = options[inp - 1]
+        selected_option = available_options[inp - 1]
+        self.take_action(selected_option.action)
         self.current_room = selected_option.target
+    
+    
+    def take_action(self, action):
+        print("+" * 50)
+        if action is None:
+            print("No actions here")
+            return
+        if action.item is not None:
+            self.collected_items.append(action.item.name)
+        for assignment in action.assignments:
+            res = evaluate_expression(assignment.exp, self.variables)
+            self.variables[assignment.varName.name] = res
+            print(self.variables)
+            
         
     def filter_available_options(self, options):
         available_options = []
@@ -51,12 +66,15 @@ class StoryEngine:
                 value = option.condition.val
                 print(variable + option.condition.op + str(value))
                 if (parse_operator(option.condition.op)(self.variables[variable], value)):
-                    print("passed")
+                    available_options.append(option)
+            else:
+                available_options.append(option)
+        return available_options
     
 
 def run_engine(debug=False):
     # TODO: implement debug
     path = os.path.join(os.path.dirname(__file__), '../../examples/lostTemple.story')
-    story_model = load_model(path)
+    story_model = load_model(path, debug)
     story_engine = StoryEngine()
     story_engine.interpret(story_model)

@@ -15,4 +15,4 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    run_engine()
+    run_engine(False)

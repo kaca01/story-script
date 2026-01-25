@@ -11,7 +11,7 @@ room Entrance {
     header "Temple Entrance"
     body "In front of you is a dark tunnel and a pedestal with an idol."
     
-    option "Take the golden idol" goto Corridor take Sword set gold = 100 set strength = strength - 5;
+    option "Take the golden idol" goto Corridor take Sword set gold = gold + 100 set strength = strength - 5;
     option "Just walk past" goto Corridor;
 }
 
@@ -21,7 +21,7 @@ room Corridor {
     body "The ground is shaking. You must be fast."
     
     option "Run to the exit" [strength > 5] goto Surface;
-    option "Crawl slowly" goto LostGame set strength = 2;
+    option "Crawl slowly" goto LostGame;
 }
 
 room Surface {
