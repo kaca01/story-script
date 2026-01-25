@@ -64,7 +64,7 @@ def completions(params: CompletionParams = None):
     items = []
 
     # basic keywords
-    keywords = ["room", "item", "var", "option", "goto", "take"]
+    keywords = ["room", "item", "var", "option", "goto", "take", "rule"]
     for k in keywords:
         items.append(CompletionItem(label=k))
 

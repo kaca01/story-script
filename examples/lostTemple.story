@@ -11,8 +11,8 @@ room Entrance {
     header "Temple Entrance"
     body "In front of you is a dark tunnel and a pedestal with an idol."
     
-    option "Take the golden idol" goto Corridor take Sword set gold = 100
-    option "Just walk past" goto Corridor
+    option "Take the golden idol" goto Corridor take Sword set gold = 100 set strength = strength - 5;
+    option "Just walk past" goto Corridor;
 }
 
 room Corridor {
@@ -20,20 +20,20 @@ room Corridor {
     header "Narrow Passage"
     body "The ground is shaking. You must be fast."
     
-    option "Run to the exit" [strength > 5] goto Surface
-    option "Crawl slowly" goto LostGame set strength = 2
+    option "Run to the exit" [strength > 5] goto Surface;
+    option "Crawl slowly" goto LostGame set strength = 2;
 }
 
 room Surface {
     imagePath "C://Users/user/example/path/to/background/room3.png"
     header "Freedom"
     body "You have exited the temple. Congratulations!"
-    option "End" goto Surface
+    option "End" goto Surface;
 }
 
 room LostGame {
     imagePath ""
     header "Game end"
     body "You have lost the game. Better luck next time"
-    option "end" goto LostGame
+    option "end" goto LostGame;
 }

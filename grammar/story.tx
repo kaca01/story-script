@@ -2,6 +2,7 @@ Program:
     'adventure' name=ID
     (variables *= Variable)
     (items *= Item)
+    (globalRules *= GlobalRule)
     (rooms *= Room)
 ;
 
@@ -23,7 +24,7 @@ Room:
 ;
 
 Option:
-    'option' text=STRING (condition=Condition)? 'goto' target=[Room] (action=Action)?
+    'option' text=STRING (condition=Condition)? 'goto' target=[Room] (action=Action)? ';'
     // TODO: add explanation for the consequences
     // because otherwise, there will be just option with no explanation
     // why the user cannot open the door and go to the next room
@@ -31,15 +32,47 @@ Option:
 ;
 
 Condition:
-    '[' var_name=[Variable] op=Operator val=INT ']'
+    '[' varName=[Variable] op=Operator val=INT ']'
 ;
 
 Action:
-    ('take' item=[Item])? ('set' var_name=[Variable] '=' val=INT)?
+    ('take' item=[Item])? ('set' (assignments+=Assignment | rules+=[GlobalRule]))*
+;
+
+Assignment:
+    varName=[Variable] '=' exp=Expression
+;
+
+Expression:
+    left=Term (op=AddOp right=Term)*
+;
+
+Term:
+    left=Factor (op=MulOp right=Factor)*
+;
+
+Factor:
+    value=INT
+  | var=[Variable]
+  | '(' Expression ')'
+;
+
+AddOp:
+    '+' | '-'
+;
+
+MulOp:
+    '*' | '/'
 ;
 
 Operator:
     '>' | '<' | '==' | '>=' | '<='
+;
+
+GlobalRule:
+    'rule' name=ID '{'
+    assignments+=Assignment 
+    '}'
 ;
 
 Comment:
