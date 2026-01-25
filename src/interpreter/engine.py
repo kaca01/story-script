@@ -80,11 +80,5 @@ class StoryEngine:
         if (len(options) == 1 and self.current_room.name == options[0].target.name):
             return True
         return False
-    
 
-def run_engine(debug=False):
-    # TODO: implement debug
-    path = os.path.join(os.path.dirname(__file__), '../../examples/lostTemple.story')
-    story_model = load_model(path, debug)
-    story_engine = StoryEngine()
-    story_engine.interpret(story_model)
+
