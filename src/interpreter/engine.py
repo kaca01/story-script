@@ -2,7 +2,10 @@ from src.core.model import load_model
 from src.interpreter.helper.helper_functions import parse_operator, evaluate_expression
 import os
 
-# TODO: rules are not implemented
+# TODO: rules and go back are not implemented
+# for go back add ID (int) for each item
+# when user enters room if items are already taken,
+# user can release them and move on
 class StoryEngine:
     def __init__(self):
         self.variables = {}
@@ -18,6 +21,9 @@ class StoryEngine:
         self.populate_items(model.items)
         self.current_room = model.rooms[0]
         while True:
+            if self.has_game_ended(self.current_room.options):
+                print("Game over!")
+                break
             print("-" * 50)
             print(f"Interpreting room: {self.current_room.name}")
             self.select_option(self.current_room.options)
@@ -46,7 +52,6 @@ class StoryEngine:
     
     
     def take_action(self, action):
-        print("+" * 50)
         if action is None:
             print("No actions here")
             return
@@ -64,12 +69,17 @@ class StoryEngine:
             if option.condition != None:
                 variable = option.condition.varName.name
                 value = option.condition.val
-                print(variable + option.condition.op + str(value))
                 if (parse_operator(option.condition.op)(self.variables[variable], value)):
                     available_options.append(option)
             else:
                 available_options.append(option)
         return available_options
+    
+    
+    def has_game_ended(self, options):
+        if (len(options) == 1 and self.current_room.name == options[0].target.name):
+            return True
+        return False
     
 
 def run_engine(debug=False):
