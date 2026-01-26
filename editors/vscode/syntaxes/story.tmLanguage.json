@@ -1,0 +1,57 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "StoryScript",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#keywords" },
+        { "include": "#entity" },
+        { "include": "#control" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#operator" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [{
+                "name": "comment.line.double-slash.story",
+                "match": "//.*$"
+            }]
+        },
+        "keywords": {
+            "patterns": [{
+                "name": "keyword.declaration.story",
+                "match": "\\b(adventure|room|item|var)\\b"
+            }]
+        },
+         "entity": {
+            "patterns": [{
+                "name": "entity.other.attribute-name.story",
+                "match": "\\b(imagePath|header|body|option)\\b"
+            }]
+        },
+         "control": {
+            "patterns": [{
+                "name": "keyword.control.action.story",
+                "match": "\\b(goto|take|set|weight)\\b"
+            }]
+        },
+        "strings": {
+            "name": "string.quoted.double.story",
+            "begin": "\"",
+            "end": "\""
+        },
+        "numbers": {
+            "patterns": [{
+                "name": "constant.numeric.story",
+                "match": "\\b\\d+\\b"
+            }]
+        },
+        "operator": {
+            "patterns": [{
+               "name": "keyword.operator.comparison.story",
+                "match": "(>|<|==|>=|<=|=)"
+            }]
+        }
+    },
+    "scopeName": "source.story"
+}

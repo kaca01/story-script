@@ -1,0 +1,43 @@
+Program:
+    'adventure' name=ID
+    (variables *= Variable)
+    (items *= Item)
+    (rooms *= Room)
+;
+
+Variable:
+    'var' name=ID '=' value=INT
+;
+
+Item:
+    'item' name=ID 'weight' weight=INT
+;
+
+Room:
+    'room' name=ID '{'
+        'imagePath' imagePath=STRING
+        'header' header=STRING
+        'body' body=STRING
+        (options *= Option)
+    '}'
+;
+
+Option:
+    'option' text=STRING (condition=Condition)? 'goto' target=[Room] (action=Action)?
+;
+
+Condition:
+    '[' var_name=[Variable] op=Operator val=INT ']'
+;
+
+Action:
+    ('take' item=[Item])? ('set' var_name=[Variable] '=' val=INT)?
+;
+
+Operator:
+    '>' | '<' | '==' | '>=' | '<='
+;
+
+Comment:
+    /\/\/.*$/ | /\/\*[\s\S]*?\*\//
+;
