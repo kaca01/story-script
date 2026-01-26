@@ -14,6 +14,12 @@ Item:
     'item' name=ID 'weight' weight=INT
 ;
 
+GlobalRule:
+    'rule' name=ID '{'
+    assignments+=Assignment 
+    '}'
+;
+
 Room:
     'room' name=ID '{'
         'imagePath' imagePath=STRING
@@ -36,7 +42,15 @@ Condition:
 ;
 
 Action:
-    ('take' item=[Item])? ('set' (assignments+=Assignment | rules+=[GlobalRule]))*
+    ('take' item=[Item])? (elements += ActionElement)*
+;
+
+ActionElement:
+    'set' (Assignment | GlobalRuleCall)
+;
+
+GlobalRuleCall:
+    rule=[GlobalRule]
 ;
 
 Assignment:
@@ -52,27 +66,20 @@ Term:
 ;
 
 Factor:
-    value=INT
-  | var=[Variable]
-  | '(' Expression ')'
+    var=[Variable]
+    | value=INT
+    | '(' Expression ')'
 ;
 
-AddOp:
-    '+' | '-'
-;
-
-MulOp:
-    '*' | '/'
-;
-
+// Operatori poredani od dužih ka kraćim zbog pravilnog parsiranja
 Operator:
-    '>' | '<' | '==' | '>=' | '<='
+    '>=' | '<=' | '==' | '>' | '<'
 ;
 
-GlobalRule:
-    'rule' name=ID '{'
-    assignments+=Assignment 
-    '}'
+AddOp: '+' | '-'
+;
+
+MulOp: '*' | '/'
 ;
 
 Comment:

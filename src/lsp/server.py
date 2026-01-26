@@ -1,7 +1,9 @@
 import sys
 import os
 from pygls.server import LanguageServer
+from textx import get_children_of_type
 from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, 
+                              CompletionItemKind,
                               CompletionItem, CompletionList, 
                               CompletionParams)
 from lsprotocol.types import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN,
@@ -18,7 +20,7 @@ try:
 except Exception as e:
     metamodel = None
 
-# definition
+# go to definition
 @server.feature(TEXT_DOCUMENT_DEFINITION)
 def definition(ls, params):
     text_doc = ls.workspace.get_text_document(params.text_document.uri)
@@ -31,58 +33,98 @@ def definition(ls, params):
     
     import re
     line = lines[line_num]
-    word = re.findall(r'\w+', line)
+    words = re.finditer(r'\b\w+\b', line)
     target_word = ""
-    for w in word:
-        start = line.find(w)
-        if start <= col_num <= start + len(w):
-            target_word = w
+    for m in words:
+        if m.start() <= col_num <= m.end():
+            target_word = m.group()
             break
 
     if not target_word: return None
 
     try:
         model = metamodel.model_from_str(source)
-        for room in model.rooms:
-            if room.name == target_word:
-                for idx, l in enumerate(lines):
-                    if f"room {target_word}" in l:
-                        return Location(
-                            uri=params.text_document.uri,
-                            range=Range(
-                                start=Position(line=idx, character=0),
-                                end=Position(line=idx, character=len(l))
+        
+        search_configs = [
+            (metamodel['Room'], 'room'),
+            (metamodel['Variable'], 'var'),
+            (metamodel['Item'], 'item'),
+            (metamodel['GlobalRule'], 'rule')
+        ]
+
+        for cls, keyword in search_configs:
+            entities = get_children_of_type(cls, model)
+            for ent in entities:
+                if ent.name == target_word:
+                    for idx, l in enumerate(lines):
+                        if re.search(rf'\b{keyword}\s+{target_word}\b', l):
+                            return Location(
+                                uri=params.text_document.uri,
+                                range=Range(
+                                    start=Position(line=idx, character=0),
+                                    end=Position(line=idx, character=len(l))
+                                )
                             )
-                        )
     except:
-        pass
+        patterns = [r'\broom\s+', r'\bvar\s+', r'\bitem\s+', r'\brule\s+']
+        for p in patterns:
+            for idx, l in enumerate(lines):
+                if re.search(p + target_word + r'\b', l):
+                    return Location(
+                        uri=params.text_document.uri,
+                        range=Range(
+                            start=Position(line=idx, character=0),
+                            end=Position(line=idx, character=len(l))
+                        )
+                    )
     return None
 
 # autocomplete
 @server.feature(TEXT_DOCUMENT_COMPLETION)
 def completions(params: CompletionParams = None):
     items = []
+    doc = server.workspace.get_document(params.text_document.uri)
 
     # basic keywords
-    keywords = ["room", "item", "var", "option", "goto", "take", "rule"]
+    keywords = ["room", "item", "var", "option", "goto", "take", "rule", "set", "weight"]
     for k in keywords:
         items.append(CompletionItem(label=k))
 
-    # dynamic proposal from textX
+    # dynamic proposal
     if metamodel:
         try:
-            doc = server.workspace.get_document(params.text_document.uri)
             model = metamodel.model_from_str(doc.source)
 
+            if hasattr(model, 'variables'):
+                for v in model.variables:
+                    items.append(CompletionItem(label=v.name, kind=CompletionItemKind.Variable))
+            
+            if hasattr(model, 'items'):
+                for i in model.items:
+                    items.append(CompletionItem(label=i.name, kind=CompletionItemKind.Struct))
+            
+            if hasattr(model, 'globalRules'):
+                for r in model.globalRules:
+                    items.append(CompletionItem(label=r.name, kind=CompletionItemKind.Function))
+            
             if hasattr(model, 'rooms'):
-                    for room in model.rooms:
-                        if room.name:
-                            items.append(CompletionItem(label=room.name))
+                for room in model.rooms:
+                    items.append(CompletionItem(label=room.name, kind=CompletionItemKind.Class))
+
         except Exception as e:
             import re
-            rooms = re.findall(r'room\s+(\w+)', doc.source)
-            for r in set(rooms):
-                items.append(CompletionItem(label=r))
+            
+            patterns = {
+                'var': (r'var\s+(\w+)', CompletionItemKind.Variable),
+                'item': (r'item\s+(\w+)', CompletionItemKind.Struct),
+                'rule': (r'rule\s+(\w+)', CompletionItemKind.Function),
+                'room': (r'room\s+(\w+)', CompletionItemKind.Class)
+            }
+            
+            for key, (pattern, kind) in patterns.items():
+                found = re.findall(pattern, doc.source)
+                for name in set(found):
+                    items.append(CompletionItem(label=name, kind=kind))
 
     return CompletionList(is_incomplete=False, items=items)
 

@@ -20,7 +20,7 @@
         "keywords": {
             "patterns": [{
                 "name": "keyword.declaration.story",
-                "match": "\\b(adventure|room|item|var)\\b"
+                "match": "\\b(adventure|room|rule|item|var)\\b"
             }]
         },
          "entity": {
