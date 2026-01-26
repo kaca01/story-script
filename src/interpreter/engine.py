@@ -50,17 +50,34 @@ class StoryEngine:
         self.take_action(selected_option.action)
         self.current_room = selected_option.target
     
-    
+
     def take_action(self, action):
         if action is None:
             print("No actions here")
             return
+        
+        # 1. check items
         if action.item is not None:
             self.collected_items.append(action.item.name)
-        for assignment in action.assignments:
-            res = evaluate_expression(assignment.exp, self.variables)
-            self.variables[assignment.varName.name] = res
-            print(self.variables)
+            print(f"Picked up item: {action.item.name}")
+
+        # 2. check actions
+        for element in action.elements:
+            # if is the variable
+            if hasattr(element, 'varName'): 
+                res = evaluate_expression(element.exp, self.variables)
+                self.variables[element.varName.name] = res
+                print(f"Variable updated: {element.varName.name} = {res}")
+            
+            # if is the rule
+            elif hasattr(element, 'rule'):
+                print(f"Executing rule: {element.rule.name}")
+                for rule_assignment in element.rule.assignments:
+                    res = evaluate_expression(rule_assignment.exp, self.variables)
+                    self.variables[rule_assignment.varName.name] = res
+                    print(f"Rule update: {rule_assignment.varName.name} = {res}")
+        
+        print(self.variables)
             
         
     def filter_available_options(self, options):

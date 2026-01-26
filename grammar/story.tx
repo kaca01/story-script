@@ -71,7 +71,6 @@ Factor:
     | '(' Expression ')'
 ;
 
-// Operatori poredani od dužih ka kraćim zbog pravilnog parsiranja
 Operator:
     '>=' | '<=' | '==' | '>' | '<'
 ;
