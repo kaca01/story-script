@@ -11,13 +11,13 @@ room Dungeon {
     body "You are holding a boulder. You feel very weak."
 
    // strength is lower then 5
-    option "Climb the rope" [strength > 5] goto Surface
-    option "Drop everything" goto Dungeon set strength = 10
+    option "Climb the rope" [strength > 5] goto Surface;
+    option "Drop everything" goto Dungeon set strength = 10;
 }
 
 room Surface {
     imagePath "assets/sun.png"
     header "Safe at last"
     body "You made it out!"
-    option "End" goto Surface
+    option "End" goto Surface;
 }
