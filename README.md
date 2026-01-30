@@ -8,6 +8,7 @@ Projekat obuhvata razvoj meta-modela (gramatike), statičku analizu ispravnosti 
 - Python 3.x
 - textX: Alat za definisanje gramatike i generisanje meta-modela
 - Jinja2 Za generisanje HTML/JS verzije igre
+- LSP (Language Server Protocol): Omogućava podršku unutar VS Code editora za specifični jezik, uključujući syntax highlighting, error chacking, autocomplite, go to definition
 
 ## 3. Primjer
 ```
