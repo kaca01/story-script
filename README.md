@@ -3,6 +3,7 @@
 ## 1. Opis projekta
 StoryScript omogućava kreiranje kompleksnih nelinearnih narativa (tekstualnih RPG igara) - definiciju pravila svijeta, sistema inventara i uslovnih grananja zasnovanih na stanju igrača.
 Projekat obuhvata razvoj meta-modela (gramatike), statičku analizu ispravnosti priče (validaciju) i runtime engine-a koji interpretira kod i vodi korisnika kroz igru.
+
 ## 2. Tehnologije
 - Python 3.x
 - textX: Alat za definisanje gramatike i generisanje meta-modela
@@ -105,28 +106,36 @@ room Poraz {
 ```
 
 ## 4. Opis primjera
-### 4. 1. Varijable kao "Stanje svijeta"
-U linijama _var snaga = 10_ i _var zlato = 0_, definišemo globalne registre.
-Zlato služi kao skor (score). To je varijabla koju igrač želi da poveća.
-Snaga služi kao resurs. To je varijabla koja ograničava šta igrač može da uradi.
-### 4.2. "Mač" i mehanika težine
-U gramatici je definisano: _item Mac weight 15_. Kada igrač izabere opciju: _option "Uzmi mac" goto Hodnik take Mac set zlato = 100_
-dešavaju se tri stvari odjednom:
-- Promjena lokacije: Igrač se seli u Hodnik.
-- Inventory update: U listu predmeta mu se dodaje Mac .
-- Variable update: Njegovo zlato skače sa 0 na 100.
+Svaka avantura vodi igrača kroz niz soba u kojima donosi odluke koje direktno utiču na njegove resurse, tok igre i konačni ishod.
+Igra započinje inicijalizacijom osnovnih parametara, uključujući statistike igrača, boss-a, raspone slučajnih vrednosti, kao i definiciju predmeta i blaga. 
+Tok igre je organizovan kroz niz room sekcija, gde svaka soba ima narativni opis i skup mogućih opcija koje igrač može da izabere.
+Svaka opcija može imati:
+1. uslov za aktivaciju
+2. promenu resursa (snaga, zlato, sreća)
+3. dodavanje ili uklanjanje predmeta,
+4. prelazak u drugu sobu
+
+Igra sadrži i elemente slučajnosti i strategije, naročito u delu vezanom za molitvu na Oltaru sudbine i finalni obračun sa boss-om. 
+Završetak avanture zavisi od ishoda borbe, pri čemu igrač može pobediti i nastaviti dalje ili doživeti poraz i restartovati igru.
+
 ## 5. Funkcionalnosti
-### 5.1. Definicija gramatike
-Izrada .tx fajla sa pravilima
-### 5.2. Statička analiza - implemntacija validatora koji provjerava:
-- Postojanje svih ciljnih soba (target=[Room]).
-- Ciklične reference koje mogu blokirati igru.
-- Da li težina predmeta prelazi kapacitet ako se definiše limit.
-### 5.3. State Machine Engine
-Razvoj Python klase koja učitava model i čuva trenutno stanje (inventory, varijable, trenutna soba).
-### 5.4. Kreiranje CLI petlje koja:
-Čisti ekran i ispisuje header/body.
-Filtrira opcije (prikazuje samo one čiji je Condition ispunjen).
-Obrađuje unos i ažurira varijable sistema.
+Sistem podržava nekoliko naprednih mehanika koje igru čine dinamičnom:
+### 5.1. Globalna podešavanja i resursi
+1. Definisanje opsega štete: Mogućnost podešavanja minimalne i maksimalne štete za igrača i boss-a: `player_hit_range` i `boss_hit_range`.
+2. Praćenje stanja: Igra u realnom vremenu prati `zlato`, `snagu` i `sreću`, čije se vrednosti menjaju zavisno od akcija igrača.
+### 5.2. Ekonomija i inventar
+Trgovina: Sobe poput `Ulaz` i `Predvorje` omogućavaju kupovinu predmeta (`weapon`) trošenjem zlata.
+Sakupljanje blaga: Igrač može uzeti dragocenosti (`treasure`), ali uz penal (npr. gubitak snage), što stvara moralnu dilemu: da li se isplati rizikovati zdravlje za bogatstvo?
+Upravljanje oružjem: Oružja imaju `hit_points` koji povećavaju štetu boss-a u borbi, ali su potrošna (brišu se iz inventara nakon upotrebe).
+### 5.3. Dinamičnost i nasumičnost
+Uslovne opcije: Neke akcije su dostupne samo ako igrač ima dovoljno resursa (npr. `[zlato >= 15]`).
+Randomizacija: Korišćenje funkcije `random(min, max)` za određivanje ishoda molitve ili vrednosti "Misterioznog Poklona".
+Logička grananja: Priča se grana na osnovu sreće (`room IshodMolitve`), gde igrač biva "blagosloven" ili "proklet".
+### 5.4. Borbeni sistem
+Interaktivna borba: Poseban `fight` tip akcije koji inicira automatski ili poluautomatski duel.
+Modifikatori borbe: Borba uzima u obzir snagu igrača, HP boss-a i bonus sreće.
+Ishodi: Jasno definisani putevi za `Pobeda` (prenos resursa u sledeću misiju) i `Poraz` (mogućnost vaskrsnuća i restarta).
+### 5.5. Kontinuitet
+Povezivanje avantura: Funkcionalnost `next SledecaMisija` omogućava prenos dela zlata i sreće u naredni nivo, dok se snaga resetuje.
 
 
