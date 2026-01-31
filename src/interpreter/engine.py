@@ -16,7 +16,6 @@ class StoryEngine:
     def __str__(self):
         return f"StoryEngine(variables={self.variables}, collected_items={self.collected_items}, current_room={self.current_room})"
     
-    
     def interpret(self, model):
         self.populate_variables(model.variables)
         self.populate_items(model.items)
@@ -25,26 +24,21 @@ class StoryEngine:
         print("-" * 50)
         print(f"Interpreting room: {self.current_room.name}")
     
-    
     def populate_variables(self, variables):
         for var in variables:
             self.variables[var.name] = var.value
             print(f"Initialized variable: {var.name} = {var.value}")
-    
     
     def populate_items(self, items):
         for item in items:
             self.items[item.name] = item.weight
             print(f"Initialized item: {item.name} weight {item.weight}")
             
-            
-    def select_option(self, inp):   # TODO: rest call
+    def select_option(self, inp):
         selected_option = self.available_options[inp]
         self.take_action(selected_option.action)
-        # TODO: update available options after action
         self.current_room = selected_option.target
         self.available_options = self.filter_available_options(self.current_room.options)
-    
     
     def take_action(self, action):
         if action is None:
@@ -57,7 +51,6 @@ class StoryEngine:
             self.variables[assignment.varName.name] = res
             print(self.variables)
             
-            
     def filter_available_options(self, options):
         available_options = []
         for option in options:
@@ -69,19 +62,6 @@ class StoryEngine:
             else:
                 available_options.append(option)
         return available_options
-    
-    
-    def get_view_state(self):
-        options = []
-        for option in self.available_options:
-            options.append(parse_option_to_dict(option))
-        return {
-            "header": self.current_room.header,
-            "body": self.current_room.body,
-            "imagePath": self.current_room.imagePath,
-            "options": options,
-        }
-    
     
     def has_game_ended(self, options):
         if len(options) == 1 and self.current_room.name == options[0].target.name:
