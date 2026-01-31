@@ -12,7 +12,6 @@ class StoryEngine:
         self.current_room = None
         self.available_options = []
     
-    
     def __str__(self):
         return f"StoryEngine(variables={self.variables}, collected_items={self.collected_items}, current_room={self.current_room})"
     
@@ -42,7 +41,6 @@ class StoryEngine:
     
     def take_action(self, action):
         if action is None:
-            print("No actions here")
             return
         if action.item is not None:
             self.collected_items.append(action.item.name)

@@ -1,6 +1,5 @@
 import os
 from flask import Flask
-from src.core.model import load_model
 from src.interpreter.engine import StoryEngine
 from api.routes import dsl_bp
 

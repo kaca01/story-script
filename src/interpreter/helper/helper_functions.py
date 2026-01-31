@@ -1,3 +1,5 @@
+import copy
+from math import exp
 import operator
 
 
@@ -14,12 +16,11 @@ def parse_operator(op):
         case ">=":
             return operator.ge
 
+def evaluate_expression(exp, context_vars):
+    if hasattr(exp, 'op') and len(exp.op) > 0:
+        result = evaluate_expression(exp.left, context_vars)
 
-def evaluate_expression(obj, context_vars):
-    if hasattr(obj, 'op') and len(obj.op) > 0:
-        result = evaluate_expression(obj.left, context_vars)
-
-        for op, right in zip(obj.op, obj.right):
+        for op, right in zip(exp.op, exp.right):
             if op == '+':
                 result += evaluate_expression(right, context_vars)
             elif op == '-':
@@ -30,21 +31,20 @@ def evaluate_expression(obj, context_vars):
                 result /= evaluate_expression(right, context_vars)
         return result
 
-    if hasattr(obj, 'left'):
-        return evaluate_expression(obj.left, context_vars)
+    if hasattr(exp, 'left'):
+        return evaluate_expression(exp.left, context_vars)
 
-    if isinstance(obj, int):
-        return obj
+    if isinstance(exp, int):
+        return exp
 
-    if hasattr(obj, 'var') and obj.var:
-        var_name = obj.var.name
+    if hasattr(exp, 'var') and exp.var:
+        var_name = exp.var.name
         return context_vars.get(var_name, 0)
 
-    if hasattr(obj, 'value'):
-        return obj.value
+    if hasattr(exp, 'value'):
+        return exp.value
 
     return 0
-
 
 def parse_object_to_dict(obj, seen=None):
     if seen is None:
@@ -83,16 +83,24 @@ def parse_object_to_dict(obj, seen=None):
 
     return result
 
-
-def parse_option_to_dict(option):
+def parse_option_to_dict(option, context_vars):
         return {
             'text': option.text,
             'room': option.target.name,
-            'action': action_to_dict(option.action)
+            'action': action_to_dict(option.action, context_vars)
         }
 
+def get_exp_effects(assignment, context_vars):
+    difference = {}
+    copy_vars = copy.deepcopy(context_vars)
+    res = evaluate_expression(assignment.exp, copy_vars)
+    copy_vars[assignment.varName.name] = res
+    for k, v in copy_vars.items():
+        if context_vars[k] != v:
+            difference[k] = v - context_vars[k]
+    return difference
 
-def action_to_dict(action):
+def action_to_dict(action, context_vars):
     if action is None:
         return None
 
@@ -100,38 +108,22 @@ def action_to_dict(action):
         "take": action.item.name if getattr(action, "item", None) else None,
         "assignments": [
             {
-                "varName": a.varName.name,
-                "exp": assignment_to_string(a)  # optional, make expression readable
+                "varName": assignment.varName.name,
+                "exp": get_exp_effects(assignment, context_vars)
             }
-            for a in getattr(action, "assignments", [])
+            for assignment in getattr(action, "assignments", [])
         ],
         "rules": [
             {
                 "name": r.name,
                 "assignments": [
                     {
-                        "varName": ra.varName.name,
-                        "exp": assignment_to_string(ra)
+                        "varName": assignment.varName.name,
+                        "exp": get_exp_effects(assignment, context_vars)
                     }
-                    for ra in getattr(r, "assignments", [])
-                ]
+                    for assignment in getattr(action, "assignments", [])
+                ],
             }
             for r in getattr(action, "rules", [])
         ]
     }
-
-
-def assignment_to_string(assignment):
-    res = assignment.varName.name + " = "
-    # TODO: finish this
-    return res
-
-# def term_to_string(term):
-#     res = ""
-#     match(term.left) :
-#         case(isinstance(term.left, int)):
-#             res += str(term.left)
-#         case(isinstance(term.left, int)): # TODO...
-#     return res
-
-
