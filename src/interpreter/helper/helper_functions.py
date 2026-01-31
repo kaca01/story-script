@@ -92,7 +92,7 @@ def parse_option_to_dict(option, context_vars):
 
 def get_exp_effects(assignment, context_vars):
     difference = {}
-    copy_vars = copy.deepcopy(context_vars)
+    copy_vars = copy.copy(context_vars)
     res = evaluate_expression(assignment.exp, copy_vars)
     copy_vars[assignment.varName.name] = res
     for k, v in copy_vars.items():
