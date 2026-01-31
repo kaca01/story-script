@@ -4,7 +4,7 @@ import os
 def get_metamodel(debug=False):
     current_dir = os.path.dirname(__file__)
     # Putanja do tvoje gramatike
-    grammar_path = os.path.join(current_dir, '../../grammar/story.tx')
+    grammar_path = os.path.join(current_dir, '../grammar/story.tx')
     return metamodel_from_file(grammar_path, debug=debug)
 
 def load_model(file_path, debug=False):
