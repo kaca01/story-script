@@ -85,7 +85,8 @@ room BossArena {
     header "Finalni Obračun"
     body "Džinovski kameni čuvar se budi! Boss HP: {boss_hp}. Tvoja Snaga: {snaga}. Bonus Sreće: {sreca * 0.1}."
 
-    fight "UDARI BOSS-A" [snaga > 0] win Pobeda loose Poraz
+    fight "UDARI BOSS-A" player_hit_range [snaga > 0] win Pobeda loose Poraz
+    // navodi se hit range player-a, drugi se automatski uzima kao hit range boss-a
     // fight dio ce engine odraditi
     // nakon svakog udarca korisnika, udara boss
     // prije svog udarca, korisnik moze da izabere nesto od weapon-a i da to iskoristi samo jednom
