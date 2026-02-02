@@ -5,8 +5,8 @@ from src.core.model import load_model
 class StoryService:
     def __init__(self, story_path):
         self.model = load_model(story_path, False)
-        self.engine = StoryEngine()
-        self.engine.interpret(self.model)
+        # self.engine = StoryEngine()
+        # self.engine.interpret(self.model)
 
     def get_view_state(self):
         options = []

@@ -41,7 +41,7 @@ HitRange:
 ;
 
 Fight:
-    'fight' description=STRING hr=[HitRange] (condition=Condition)? 'win' winRoom=[Room] 'loose' looseRoom=[Room]
+    'fight' description=STRING hr=[HitRange] (condition=Condition)? 'win' winRoom=[Room] 'lose' loseRoom=[Room]
 ;
 
 Room:
@@ -49,7 +49,7 @@ Room:
         'imagePath' imagePath=STRING
         'header' header=STRING
         'body' body=STRING
-        ((options *= Option) | fight=Fight)
+        ((options += Option) | fight=Fight)
     '}'
 ;
 
@@ -58,19 +58,19 @@ Option:
 ;
 
 Condition:
-    '[' varName=[Variable] op=Operator val=INT ']'
+    '[' left=Expression op=Operator right=Expression ']'
 ;
 
 Action:
-    Buy | Take
+    Buy | Take | "restart"
 ;
 
 Buy:
-    ('buy' item=[Weapon])?  // TODO: from engine take the gold
+    'buy' item=[Weapon]  // TODO: from engine take the gold
 ;
 
 Take:
-    ('take' item=[Treasure])? ('set' (assignments+=Assignment | rules+=[GlobalRule] | randoms+=RandomAssign))*
+    'take' item=[Treasure] ('set' (assignments+=Assignment | rules+=[GlobalRule] | randoms+=RandomAssign))*
     // TODO: engine should automatically take off the strength (equals to weight of the treasure)
 ;
 
@@ -87,9 +87,9 @@ Term:
 ;
 
 Factor:
-    value=INT
+    random=Random
+  | value=INT
   | var=[Variable]
-  | random=Random
   | '(' Expression ')'
 ;
 
@@ -102,7 +102,7 @@ MulOp:
 ;
 
 Operator:
-    '>' | '<' | '==' | '>=' | '<='
+    '==' | '>=' | '<=' | '>' | '<'
 ;
 
 Random:
