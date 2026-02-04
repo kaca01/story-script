@@ -2,7 +2,7 @@ import sys
 import os
 from pygls.server import LanguageServer
 from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, 
-                              CompletionItem, CompletionList, 
+                              CompletionItem, CompletionList, CompletionItemKind,
                               CompletionParams)
 from lsprotocol.types import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN,
                               Diagnostic, Position, Range)
@@ -64,9 +64,13 @@ def completions(params: CompletionParams = None):
     items = []
 
     # basic keywords
-    keywords = ["room", "item", "var", "option", "goto", "take", "rule"]
-    for k in keywords:
-        items.append(CompletionItem(label=k))
+    keywords = [
+        "adventure", "room", "rule", "define", "strength", "gold", "luck", "boss_strength", 
+        "weapon", "treasure", "option", "goto", "value", "hit_points","take", "buy", "set", 
+        "fight", "win", "lose", "restart", "random"
+    ]
+    for words in keywords:
+        items.append(CompletionItem(label=words, kind=CompletionItemKind.Keyword))
 
     # dynamic proposal from textX
     if metamodel:
@@ -74,15 +78,55 @@ def completions(params: CompletionParams = None):
             doc = server.workspace.get_document(params.text_document.uri)
             model = metamodel.model_from_str(doc.source)
 
+            # proposal for rooms ('goto', 'win', 'lose')
             if hasattr(model, 'rooms'):
-                    for room in model.rooms:
-                        if room.name:
-                            items.append(CompletionItem(label=room.name))
+                for room in model.rooms:
+                    items.append(CompletionItem(label=room.name))
+
+            # proposal for weapons ('buy')
+            if hasattr(model, 'weapons'):
+                for weapon in model.weapons:
+                    items.append(CompletionItem(label=weapon.name))
+
+            # proposal for treasures ('take')
+            if hasattr(model, 'treasures'):
+                for t in model.treasures:
+                    items.append(CompletionItem(label=t.name))
+
+            # proposal for variables ('set' and conditions)
+            if hasattr(model, 'variables'):
+                for v in model.variables:
+                    items.append(CompletionItem(label=v.name))
+
+            # proposal for hitRanges
+            if hasattr(model, 'hitRanges'):
+                for hr in model.hitRanges:
+                    items.append(CompletionItem(label=hr.name))
+
+            # proposal for rules
+            if hasattr(model, 'globalRules'):
+                for rule in model.globalRules:
+                    items.append(CompletionItem(label=rule.name))
+                    
+        # if the model is syntactically invalid
         except Exception as e:
             import re
-            rooms = re.findall(r'room\s+(\w+)', doc.source)
-            for r in set(rooms):
-                items.append(CompletionItem(label=r))
+            content = doc.source
+            
+            patterns = {
+                'room': r'room\s+(\w+)',
+                'weapon': r'weapon\s+(\w+)',
+                'treasure': r'treasure\s+(\w+)',
+                'var': r'(strength|gold|luck|boss_strength)\s+(\w+)',
+                'hitrange': r'define\s+(\w+)\s*=',
+                'rule': r'rule\s+(\w+)'
+            }
+            
+            for kind, pattern in patterns.items():
+                found = re.findall(pattern, content)
+                for item in set(found):
+                    name = item[1] if isinstance(item, tuple) else item
+                    items.append(CompletionItem(label=name))
 
     return CompletionList(is_incomplete=False, items=items)
 

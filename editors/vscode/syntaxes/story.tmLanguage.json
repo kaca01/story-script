@@ -22,7 +22,7 @@
         "declarations": {
             "patterns": [{
                 "name": "keyword.declaration.story",
-                "match": "\\b(adventure|room|define|strength|gold|luck|boss_strength|weapon|treasure)\\b"
+                "match": "\\b(adventure|room|rule|define|strength|gold|luck|boss_strength|weapon|treasure)\\b"
             }]
         },
         "entities": {
