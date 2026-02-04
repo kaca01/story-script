@@ -7,6 +7,7 @@ from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION,
 from lsprotocol.types import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN,
                               Diagnostic, Position, Range)
 from lsprotocol.types import (TEXT_DOCUMENT_DEFINITION, Location)
+from lsprotocol.types import (TEXT_DOCUMENT_HOVER, Hover, HoverParams)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from src.core.model import get_metamodel
@@ -182,6 +183,63 @@ def definition(ls, params):
                                     end=Position(line=idx, character=len(l))
                                 )
                             )
+    except Exception:
+        pass
+
+    return None
+
+# hover
+@server.feature(TEXT_DOCUMENT_HOVER)
+def hover(ls, params: HoverParams):
+    text_doc = ls.workspace.get_text_document(params.text_document.uri)
+    source = text_doc.source
+    line_num = params.position.line
+    col_num = params.position.character
+    lines = source.splitlines()
+
+    if line_num >= len(lines): return None
+
+    # find the word under the cursor
+    import re
+    line = lines[line_num]
+    words = re.findall(r'\w+', line)
+    target_word = ""
+    for w in words:
+        start = line.find(w)
+        if start <= col_num <= start + len(w):
+            target_word = w
+            break
+
+    if not target_word: return None
+
+    try:
+        model = metamodel.model_from_str(source)
+        
+        # check weapons
+        for w in getattr(model, 'weapons', []):
+            if w.name == target_word:
+                return Hover(contents=f"**Weapon: {w.name}**\n\n- Value: {w.value} gold\n- Hit Points: {w.hp}")
+
+        # check treasures
+        for t in getattr(model, 'treasures', []):
+            if t.name == target_word:
+                return Hover(contents=f"**Treasure: {t.name}**\n\n- Weight: {t.weight} kg")
+
+        # check variables
+        for v in getattr(model, 'variables', []):
+            if v.name == target_word:
+                # is strength, gold, luck
+                var_type = v.__class__.__name__ 
+                return Hover(contents=f"**{var_type}: {v.name}**\n\n- Initial Value: {v.value}")
+
+        # hit ranges
+        for hr in getattr(model, 'hitRanges', []):
+            if hr.name == target_word:
+                # from is python keyword
+                start_val = getattr(hr, 'from', '') 
+                end_val = hr.to
+                return Hover(contents=f"**Hit Range: {hr.name}**\n\n- Range: [{start_val}, {end_val}]")
+            
     except Exception:
         pass
 
