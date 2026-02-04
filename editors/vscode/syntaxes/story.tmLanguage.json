@@ -3,12 +3,14 @@
     "name": "StoryScript",
     "patterns": [
         { "include": "#comments" },
-        { "include": "#keywords" },
-        { "include": "#entity" },
-        { "include": "#control" },
+        { "include": "#declarations" },
+        { "include": "#control_flow" },
+        { "include": "#actions" },
+        { "include": "#entities" },
         { "include": "#strings" },
         { "include": "#numbers" },
-        { "include": "#operator" }
+        { "include": "#operators" },
+        { "include": "#functions" }
     ],
     "repository": {
         "comments": {
@@ -17,22 +19,34 @@
                 "match": "//.*$"
             }]
         },
-        "keywords": {
+        "declarations": {
             "patterns": [{
                 "name": "keyword.declaration.story",
-                "match": "\\b(adventure|room|item|var)\\b"
+                "match": "\\b(adventure|room|define|strength|gold|luck|boss_strength|weapon|treasure)\\b"
             }]
         },
-         "entity": {
+        "entities": {
             "patterns": [{
                 "name": "entity.other.attribute-name.story",
-                "match": "\\b(imagePath|header|body|option)\\b"
+                "match": "\\b(imagePath|header|body|value|hit_points|weight)\\b"
             }]
         },
-         "control": {
+        "control_flow": {
             "patterns": [{
-                "name": "keyword.control.action.story",
-                "match": "\\b(goto|take|set|weight)\\b"
+                "name": "keyword.control.story",
+                "match": "\\b(goto|win|lose|restart|option|fight)\\b"
+            }]
+        },
+        "actions": {
+            "patterns": [{
+                "name": "keyword.other.action.story",
+                "match": "\\b(take|buy|set)\\b"
+            }]
+        },
+        "functions": {
+            "patterns": [{
+                "name": "support.function.story",
+                "match": "\\b(random)\\b"
             }]
         },
         "strings": {
@@ -46,10 +60,10 @@
                 "match": "\\b\\d+\\b"
             }]
         },
-        "operator": {
+        "operators": {
             "patterns": [{
-               "name": "keyword.operator.comparison.story",
-                "match": "(>|<|==|>=|<=|=)"
+                "name": "keyword.operator.story",
+                "match": "(>|<|==|>=|<=|=|\\+|\\-|\\*|/)"
             }]
         }
     },
