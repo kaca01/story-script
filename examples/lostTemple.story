@@ -1,39 +1,146 @@
-adventure LostTemple
+adventure IzgubljeniHram
 
-var strength = 10 
-var gold = 0
+// settings
+define player_hit_range = [1, 10]
+define boss_hit_range = [1, 5]
 
-item Sword weight 15
-item SmallKey weight 1
+// resources
+strength snaga = 25
+gold zlato = 50
+luck sreca = 5
 
-room Entrance {
-    imagePath "C://Users/user/example/path/to/background/room1.png"
-    header "Temple Entrance"
-    body "In front of you is a dark tunnel and a pedestal with an idol."
-    
-    option "Take the golden idol" goto Corridor take Sword set gold = gold + 100 set strength = strength - 5;
-    option "Just walk past" goto Corridor;
+// stats
+boss_strength boss_hp = 40
+
+// weapons
+weapon Mac value 15 hit_points 5
+weapon Stit value 10 hit_points 3
+weapon SvetiGral value 30 hit_points 10
+
+// treasures
+treasure Dijamant weight 5
+treasure MisteriozniPoklon weight 3
+treasure ZlatnaMaske weight 7
+
+// rooms
+room Ulaz {
+    imagePath "ulaz.png"
+    header "Ulaz u riznicu"
+    body "U senci vrata nalaze se osnovni predmeti. Svaki izbor ima cenu u zlatu ili snazi."
+
+    option "Kupi Mač (-15 zlata)"
+        [zlato >= 15]
+        buy Mac
+        goto HodnikIskusenja;
+
+    option "Uzmi Dijamant (+200 zlata, -5 snage)"
+        take Dijamant
+            set zlato = zlato + 200
+            // set snaga = snaga - 5 // ovo necemo vise stavljati, nego ce se engine brinuti o tome
+        goto HodnikIskusenja;
+
+    option "Kreni dalje bez ičega"
+        goto HodnikIskusenja;
 }
 
-room Corridor {
-    imagePath "C://Users/user/example/path/to/background/room2.png"
-    header "Narrow Passage"
-    body "The ground is shaking. You must be fast."
-    
-    option "Run to the exit" [strength > 5] goto Surface;
-    option "Crawl slowly" goto LostGame;
+room HodnikIskusenja {
+    imagePath "hodnik.png"
+    header "Hodnik Iskušenja"
+    body "Pod je prekriven zlatnicima, ali vazduh je težak i iscrpljuje vas."
+
+    option "Pokupi Zlatnu Masku (+150 zlata, -7 snage)"
+        take ZlatnaMaske
+            set zlato = zlato + 150
+        goto OltarSudbine;
+
+    option "Uzmi Misteriozni Poklon (-3 snage)"
+        take MisteriozniPoklon
+            set zlato = zlato + (zlato / 10 + (random(1, 5) * 3))
+        goto OltarSudbine;
+
+    option "Ignoriši blago i štedi snagu"
+        goto OltarSudbine;
 }
 
-room Surface {
-    imagePath "C://Users/user/example/path/to/background/room3.png"
-    header "Freedom"
-    body "You have exited the temple. Congratulations!"
-    option "End" goto Surface;
+room OltarSudbine {
+    imagePath "oltar.png"
+    header "Oltar Sudbine"
+    body "Ovaj oltar traži veru."
+
+    option "Moli se za sreću"
+        take MisteriozniPoklon
+            set sreca = random(1, 2)
+        goto IshodMolitve;
+
+    option "Samo prođi ka čuvaru"
+        goto Predvorje;
 }
 
-room LostGame {
-    imagePath ""
-    header "Game end"
-    body "You have lost the game. Better luck next time"
-    option "end" goto LostGame;
+room IshodMolitve {
+    imagePath "glas.png"
+    header "Glas Bogova"
+    body "Osetili ste promenu u svojoj auri."
+
+    option "Blagoslovljen si! (+15 sreće)"
+        [sreca == 1]
+        take Dijamant
+            set sreca = sreca + 15
+        goto Predvorje;
+
+    option "Proklet si! (-5 sreće)"
+        [sreca == 2]
+        take Dijamant
+            set sreca = sreca - 5
+        goto Predvorje;
+}
+
+room Predvorje {
+    imagePath "trgovac.png"
+    header "Dvorana Trgovca"
+    body "Poslednja stanica pre arene."
+
+    option "Kupi Štit (-10 zlata)"
+        [zlato >= 10]
+        buy Stit
+        goto BossArena;
+
+    option "Kupi Sveti Gral (-30 zlata)"
+        [zlato >= 30]
+        buy SvetiGral
+        goto BossArena;
+
+    option "Uđi u arenu spreman"
+        goto BossArena;
+}
+
+room BossArena {
+    imagePath "arena.png"
+    header "Finalni Obračun"
+    body "Džinovski kameni čuvar se budi!"
+
+    fight "UDARI BOSS-A"
+        player_hit_range  // da bi engine znao koji je opseg igraca, drugi se automatski uzima za boss-a
+        // dodati validaciju da moraju biti tacno 2 hit range-a, ako imamo boss-a
+        [snaga > 0]
+        win Pobeda
+        lose Poraz
+}
+
+room Pobeda {
+    imagePath "pobeda.png"
+    header "Pobeda!"
+    body "Čuvar se srušio! Izlaziš iz hrama sa slavom."
+
+    option "Završi avanturu"
+        goto Ulaz;
+}
+
+room Poraz {
+    imagePath "poraz.png"
+    header "Smrt u hramu"
+    body "Tvoje telo je postalo deo temelja hrama."
+
+    option "Vaskrsni na ulazu"
+        restart
+        goto Ulaz;
 }

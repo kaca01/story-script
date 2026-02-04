@@ -1,17 +1,47 @@
 Program:
     'adventure' name=ID
+    (hitRanges *= HitRange)
     (variables *= Variable)
-    (items *= Item)
+    (weapons *= Weapon)
+    (treasures *= Treasure)
     (globalRules *= GlobalRule)
     (rooms *= Room)
 ;
 
 Variable:
-    'var' name=ID '=' value=INT
+    Strength | Gold | Luck | BossStrength
 ;
 
-Item:
-    'item' name=ID 'weight' weight=INT
+Strength:
+    'strength' name=ID '=' value=INT
+;
+
+BossStrength:
+    'boss_strength' name=ID '=' value=INT
+;
+
+Gold:
+    'gold' name=ID '=' value=INT
+;
+
+Luck:
+    'luck' name=ID '=' value=INT
+;
+
+Weapon:
+    'weapon' name=ID 'value' value=INT 'hit_points' hp=INT
+;
+
+Treasure:
+    'treasure' name=ID 'weight' weight=INT
+;
+
+HitRange:
+    'define' name=ID '=' '[' from=INT ',' to=INT ']'
+;
+
+Fight:
+    'fight' description=STRING hr=[HitRange] (condition=Condition)? 'win' winRoom=[Room] 'lose' loseRoom=[Room]
 ;
 
 Room:
@@ -19,24 +49,29 @@ Room:
         'imagePath' imagePath=STRING
         'header' header=STRING
         'body' body=STRING
-        (options *= Option)
+        ((options += Option) | fight=Fight)
     '}'
 ;
 
 Option:
-    'option' text=STRING (condition=Condition)? 'goto' target=[Room] (action=Action)? ';'
-    // TODO: add explanation for the consequences
-    // because otherwise, there will be just option with no explanation
-    // why the user cannot open the door and go to the next room
-    // e.g. you are too weak, can't open the door
+    'option' text=STRING (condition=Condition)? (action=Action)? 'goto' target=[Room] ';'
 ;
 
 Condition:
-    '[' varName=[Variable] op=Operator val=INT ']'
+    '[' left=Expression op=Operator right=Expression ']'
 ;
 
 Action:
-    ('take' item=[Item])? ('set' (assignments+=Assignment | rules+=[GlobalRule]))*
+    Buy | Take | "restart"
+;
+
+Buy:
+    'buy' item=[Weapon]  // TODO: from engine take the gold
+;
+
+Take:
+    'take' item=[Treasure] ('set' (assignments+=Assignment | rules+=[GlobalRule] | randoms+=RandomAssign))*
+    // TODO: engine should automatically take off the strength (equals to weight of the treasure)
 ;
 
 Assignment:
@@ -52,7 +87,8 @@ Term:
 ;
 
 Factor:
-    value=INT
+    random=Random
+  | value=INT
   | var=[Variable]
   | '(' Expression ')'
 ;
@@ -66,7 +102,15 @@ MulOp:
 ;
 
 Operator:
-    '>' | '<' | '==' | '>=' | '<='
+    '==' | '>=' | '<=' | '>' | '<'
+;
+
+Random:
+    'random(' from=INT ',' to=INT ')'
+;
+
+RandomAssign:
+    '$' name=ID '=' Random
 ;
 
 GlobalRule:
