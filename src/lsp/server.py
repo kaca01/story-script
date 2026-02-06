@@ -1,13 +1,22 @@
 import sys
 import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.join(current_dir, "../../")
+sys.path.append(project_root)
+
+from src.core.validator import validate_model
+
 from pygls.server import LanguageServer
+
 from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, 
                               CompletionItem, CompletionList, CompletionItemKind,
                               CompletionParams)
 from lsprotocol.types import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN,
-                              Diagnostic, Position, Range)
+                              Diagnostic, DiagnosticSeverity, Position, Range)
 from lsprotocol.types import (TEXT_DOCUMENT_DEFINITION, Location)
 from lsprotocol.types import (TEXT_DOCUMENT_HOVER, Hover, HoverParams)
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from src.core.model import get_metamodel
@@ -18,6 +27,7 @@ try:
     metamodel = get_metamodel()
 except Exception as e:
     metamodel = None
+
 
 # autocomplete
 @server.feature(TEXT_DOCUMENT_COMPLETION)
@@ -91,6 +101,7 @@ def completions(params: CompletionParams = None):
 
     return CompletionList(is_incomplete=False, items=items)
 
+
 # error checking
 def validate(ls, params):
     text_doc = ls.workspace.get_text_document(params.text_document.uri)
@@ -125,13 +136,16 @@ def validate(ls, params):
 
     ls.publish_diagnostics(text_doc.uri, diagnostics)
 
+
 @server.feature(TEXT_DOCUMENT_DID_OPEN)
 def did_open(ls, params):
     validate(ls, params)
 
+
 @server.feature(TEXT_DOCUMENT_DID_CHANGE)
 def did_change(ls, params):
     validate(ls, params)
+
 
 # go to definition
 @server.feature(TEXT_DOCUMENT_DEFINITION)
@@ -187,6 +201,7 @@ def definition(ls, params):
         pass
 
     return None
+
 
 # hover
 @server.feature(TEXT_DOCUMENT_HOVER)
@@ -245,5 +260,48 @@ def hover(ls, params: HoverParams):
 
     return None
 
+
+def validate(ls, params):
+    text_doc = ls.workspace.get_text_document(params.text_document.uri)
+    source = text_doc.source
+    lines = source.splitlines()
+    diagnostics = []
+
+    try:
+        # check syntax error
+        model = metamodel.model_from_str(source)
+        
+        # check semantic error
+        if model:
+            validate_model(model)
+            
+    except Exception as e:
+        line_idx = 0
+        col_idx = 0
+        word_length = 1
+
+        if hasattr(e, 'line') and e.line is not None:
+            line_idx = e.line - 1
+            col_idx = e.col - 1 if e.col is not None else 0
+            
+            current_line = lines[line_idx] if line_idx < len(lines) else ""
+            rest_of_line = current_line[col_idx:]
+            import re
+            word_match = re.match(r'^\w+', rest_of_line)
+            word_length = len(word_match.group(0)) if word_match else 1
+
+        diagnostic = Diagnostic(
+            range=Range(
+                start=Position(line=line_idx, character=col_idx),
+                end=Position(line=line_idx, character=col_idx + word_length),
+            ),
+            message=str(e),
+            severity=DiagnosticSeverity.Error
+        )
+        diagnostics.append(diagnostic)
+
+    ls.publish_diagnostics(text_doc.uri, diagnostics)
+
+    
 if __name__ == "__main__":
     server.start_io()

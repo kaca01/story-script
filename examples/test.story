@@ -11,5 +11,5 @@ room Kraj {
     imagePath "kraj.png"
     header "Kraj"
     body "Stigao si."
-    option "Kraj" goto Start;
+    option "Kraj" restart goto Start;
 }
