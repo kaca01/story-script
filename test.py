@@ -1,11 +1,12 @@
 import os
 from src.core.model import load_model
 from src.interpreter.engine import StoryEngine
+from textx.exceptions import TextXSemanticError
 
 def run_console_game():
     # 1. Path to your .story file
     current_dir = os.path.dirname(__file__)
-    story_path = os.path.join(current_dir, 'examples/lostTemple.story')
+    story_path = os.path.join(current_dir, 'examples/test.story')
 
     # 2. Load model and engine
     try:
@@ -51,8 +52,10 @@ def run_console_game():
             except ValueError:
                 print("Please enter a valid number.")
 
+    except TextXSemanticError as e:
+        print(f"FAILED TO START GAME: {e}")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     run_console_game()
