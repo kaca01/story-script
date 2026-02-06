@@ -5,12 +5,12 @@ define player_hit_range = [1, 10]
 define boss_hit_range = [1, 5]
 
 // resources
-strength snaga = 25
+strength snaga = 40
 gold zlato = 50
 luck sreca = 5
 
 // stats
-boss_strength boss_hp = 40
+boss_strength boss_hp = 45
 
 // weapons
 weapon Mac value 15 hit_points 5
@@ -87,10 +87,10 @@ room IshodMolitve {
             set sreca = sreca + 15
         goto Predvorje;
 
-    option "Proklet si! (-5 sreće)"
+    option "Proklet si! (sreća == 1)"
         [sreca == 2]
         take Dijamant
-            set sreca = sreca - 5
+            set sreca = 1
         goto Predvorje;
 }
 

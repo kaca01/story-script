@@ -1,5 +1,5 @@
 import copy
-from math import exp
+import random
 import operator
 
 
@@ -30,6 +30,11 @@ def evaluate_expression(exp, context_vars):
             elif op == '/':
                 result /= evaluate_expression(right, context_vars)
         return result
+    
+    if hasattr(exp, 'random') and exp.random:
+        start = getattr(exp.random, 'from_', getattr(exp.random, 'from', 0))
+        end = exp.random.to
+        return random.randint(start, end)
 
     if hasattr(exp, 'left'):
         return evaluate_expression(exp.left, context_vars)
