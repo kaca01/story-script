@@ -16,6 +16,7 @@ def parse_operator(op):
         case ">=":
             return operator.ge
 
+
 def evaluate_expression(exp, context_vars):
     if hasattr(exp, 'op') and len(exp.op) > 0:
         result = evaluate_expression(exp.left, context_vars)
@@ -50,6 +51,7 @@ def evaluate_expression(exp, context_vars):
         return exp.value
 
     return 0
+
 
 def parse_object_to_dict(obj, seen=None):
     if seen is None:
@@ -88,12 +90,14 @@ def parse_object_to_dict(obj, seen=None):
 
     return result
 
+
 def parse_option_to_dict(option, context_vars):
         return {
             'text': option.text,
             'room': option.target.name,
             'action': action_to_dict(option.action, context_vars)
         }
+
 
 def get_exp_effects(assignment, context_vars):
     difference = {}
@@ -104,6 +108,7 @@ def get_exp_effects(assignment, context_vars):
         if context_vars[k] != v:
             difference[k] = v - context_vars[k]
     return difference
+
 
 def action_to_dict(action, context_vars):
     if action is None:

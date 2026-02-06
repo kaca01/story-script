@@ -4,6 +4,7 @@ from textx.exceptions import TextXSemanticError
 
 def validate_model(model):
     check_unique_names(model)
+    check_initial_values(model)
     check_variable_dependencies(model)
     check_hit_ranges_logic(model)
     check_game_flow(model)
@@ -38,6 +39,12 @@ def check_hit_ranges_logic(model):
         if 'player_hit_range' not in hr_names or 'boss_hit_range' not in hr_names:
             raise TextXSemanticError("Error: Fight detected! Both 'player_hit_range' and 'boss_hit_range' must be defined.")
 
+
+def check_initial_values(model):
+    for var in model.variables:
+        if var.value < 0:
+            raise TextXSemanticError(f"Variable '{var.name}' cannot be negative!")
+        
 
 def check_unique_names(model):
     names = set()

@@ -36,7 +36,6 @@ room Ulaz {
     option "Uzmi Dijamant (+200 zlata, -5 snage)"
         take Dijamant
             set zlato = zlato + 200
-            // set snaga = snaga - 5 // ovo necemo vise stavljati, nego ce se engine brinuti o tome
         goto HodnikIskusenja;
 
     option "Kreni dalje bez ičega"
@@ -53,7 +52,7 @@ room HodnikIskusenja {
             set zlato = zlato + 150
         goto OltarSudbine;
 
-    option "Uzmi Misteriozni Poklon (-3 snage)"
+    option "Uzmi Misteriozni Poklon (+rendom zlato, -3 snage)"
         take MisteriozniPoklon
             set zlato = zlato + (zlato / 10 + (random(1, 5) * 3))
         goto OltarSudbine;
@@ -119,8 +118,7 @@ room BossArena {
     body "Džinovski kameni čuvar se budi!"
 
     fight "UDARI BOSS-A"
-        player_hit_range  // da bi engine znao koji je opseg igraca, drugi se automatski uzima za boss-a
-        // dodati validaciju da moraju biti tacno 2 hit range-a, ako imamo boss-a
+        player_hit_range
         [snaga > 0]
         win Pobeda
         lose Poraz
