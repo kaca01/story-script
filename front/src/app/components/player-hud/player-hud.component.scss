@@ -1,0 +1,25 @@
+.hud {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #e0d8d8;
+  color: black;
+  font-family: system-ui, sans-serif;
+  border-radius: 0 0 10px 10px;
+
+  .stats {
+    display: flex;
+    gap: 2rem;
+    font-weight: bold;
+  }
+
+  .inventory {
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<div class="hud" *ngIf="player">
+  <div class="stats">
+    <span *ngFor="let stat of playerStatsArray()">
+      {{ stat.name }}: {{ stat.value }}
+    </span>
+  </div>
+
+  <div class="inventory">
+    <h4>Inventory:</h4>
+    <ul>
+      <li *ngFor="let item of player.inventory">{{ item }}</li>
+    </ul>
+  </div>
+</div>

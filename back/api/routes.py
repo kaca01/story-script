@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint
+from flask import Blueprint, request
 
 from src.interpreter.service.service import StoryService
 
@@ -18,4 +18,11 @@ def index():
 def get_state():
     res = story_service.get_view_state()
     print(res)
+    return res
+
+@dsl_bp.route("/choice", methods=["POST"])
+def make_choice():
+    data = request.get_json()
+    option_index = data.get("optionIndex")
+    res = story_service.select_option(option_index)
     return res

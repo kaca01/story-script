@@ -1,3 +1,5 @@
+<app-player-hud [player]="state?.player"></app-player-hud>
+
 <div class="story-container" *ngIf="state; else loadingTpl">
 
   <h1 class="story-header">{{ state.header }}</h1>
@@ -15,8 +17,8 @@
 
   <div class="choices">
     <button
-      *ngFor="let option of state.options"
-      (click)="selectOption(option)"
+      *ngFor="let option of state.options; let i = index"
+      (click)="selectOption(i)"
       [disabled]="loading"
     >
       {{ option.text }}

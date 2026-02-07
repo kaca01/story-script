@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StoryService } from '../../../services/core/story.service';
 import { StoryOption, StoryState } from '../../../models';
+import { PlayerHudComponent } from "../../player-hud/player-hud.component";
 
 @Component({
   selector: 'app-story-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PlayerHudComponent],
   templateUrl: './story-view.component.html',
   styleUrls: ['./story-view.component.scss']
 })
@@ -33,9 +34,17 @@ export class StoryViewComponent implements OnInit {
     });
   }
 
-  selectOption(option: StoryOption): void {
+  selectOption(option: number): void {
     this.loading = true;
 
-    // TODO: call service method
+     this.storyService.choose(option).subscribe({
+      next: (state) => {
+        this.state = state;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 }

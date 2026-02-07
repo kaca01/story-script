@@ -15,7 +15,8 @@ export class StoryService {
     return this.http.get<StoryState>(`${this.baseUrl}/state`);
   }
 
-  choose(option: StoryOption): Observable<StoryState> {
-    return this.http.post<StoryState>(`${this.baseUrl}/choice`, option);
+  choose(option: number): Observable<StoryState> {
+    console.log("Selected option index:", option);
+    return this.http.post<StoryState>(`${this.baseUrl}/choice`, {optionIndex: option});
   }
 }

@@ -3,6 +3,12 @@ export interface StoryState {
   body: string;
   imagePath: string;
   options: StoryOption[];
+  player?: PlayerStats;
+}
+
+export interface PlayerStats {
+  stats: Record<string, number>;
+  inventory: string[];
 }
 
 export interface StoryOption {
