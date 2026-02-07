@@ -1,0 +1,31 @@
+<div class="story-container" *ngIf="state; else loadingTpl">
+
+  <h1 class="story-header">{{ state.header }}</h1>
+
+  <img
+    *ngIf="state.imagePath"
+    class="story-image"
+    [src]="'/assets/images/' + state.imagePath"
+    alt="story image"
+  />
+
+  <p class="story-body">
+    {{ state.body }}
+  </p>
+
+  <div class="choices">
+    <button
+      *ngFor="let option of state.options"
+      (click)="selectOption(option)"
+      [disabled]="loading"
+    >
+      {{ option.text }}
+    </button>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="story-container">
+    Loading story...
+  </div>
+</ng-template>
