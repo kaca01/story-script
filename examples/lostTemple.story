@@ -5,12 +5,12 @@ define player_hit_range = [1, 10]
 define boss_hit_range = [1, 5]
 
 // resources
-strength snaga = 25
+strength snaga = 40
 gold zlato = 50
 luck sreca = 5
 
 // stats
-boss_strength boss_hp = 40
+boss_strength boss_hp = 45
 
 // weapons
 weapon Mac value 15 hit_points 5
@@ -36,7 +36,6 @@ room Ulaz {
     option "Uzmi Dijamant (+200 zlata, -5 snage)"
         take Dijamant
             set zlato = zlato + 200
-            // set snaga = snaga - 5 // ovo necemo vise stavljati, nego ce se engine brinuti o tome
         goto HodnikIskusenja;
 
     option "Kreni dalje bez ičega"
@@ -53,7 +52,7 @@ room HodnikIskusenja {
             set zlato = zlato + 150
         goto OltarSudbine;
 
-    option "Uzmi Misteriozni Poklon (-3 snage)"
+    option "Uzmi Misteriozni Poklon (+rendom zlato, -3 snage)"
         take MisteriozniPoklon
             set zlato = zlato + (zlato / 10 + (random(1, 5) * 3))
         goto OltarSudbine;
@@ -87,10 +86,10 @@ room IshodMolitve {
             set sreca = sreca + 15
         goto Predvorje;
 
-    option "Proklet si! (-5 sreće)"
+    option "Proklet si! (sreća == 1)"
         [sreca == 2]
         take Dijamant
-            set sreca = sreca - 5
+            set sreca = 1
         goto Predvorje;
 }
 
@@ -119,8 +118,7 @@ room BossArena {
     body "Džinovski kameni čuvar se budi!"
 
     fight "UDARI BOSS-A"
-        player_hit_range  // da bi engine znao koji je opseg igraca, drugi se automatski uzima za boss-a
-        // dodati validaciju da moraju biti tacno 2 hit range-a, ako imamo boss-a
+        player_hit_range
         [snaga > 0]
         win Pobeda
         lose Poraz
