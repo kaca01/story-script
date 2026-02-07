@@ -24,7 +24,7 @@ treasure ZlatnaMaske weight 7
 
 // rooms
 room Ulaz {
-    imagePath "ulaz.png"
+    imagePath "ulaz.jpg"
     header "Ulaz u riznicu"
     body "U senci vrata nalaze se osnovni predmeti. Svaki izbor ima cenu u zlatu ili snazi."
 
