@@ -11,6 +11,7 @@ class StoryEngine:
         self.available_options = []
         self.model = None
         self.fight_mode = False
+        self.var_types = {}
 
 
     def interpret(self, model):
@@ -35,8 +36,12 @@ class StoryEngine:
         # 1. Reset global variables to values from the .story file
         self.variables = {}
         for var in self.model.variables:
+            print(type(var).__name__)
+            self.var_types[var.name] = type(var).__name__
             self.variables[var.name] = var.value
             
+        print("8"*20)
+        print(self.var_types)
         # 2. Clear inventory and weapons
         self.weapons = []
         self.inventory = []
@@ -77,7 +82,7 @@ class StoryEngine:
             return True
 
         temp_vars = self.variables.copy()
-        strength_key = next((k for k in temp_vars.keys() if "snaga" in k.lower() or "strength" in k.lower()), None)
+        strength_key = next((k for k,v in self.var_types.items() if "strength" == v.lower()), None)
         
         if not strength_key:
             return True
@@ -121,7 +126,7 @@ class StoryEngine:
         # BUY WEAPON
         if hasattr(action, 'item') and action.__class__.__name__ == "Buy":
             weapon = action.item
-            gold_var = next((k for k in self.variables.keys() if "zlato" in k.lower() or "gold" in k.lower()), None)
+            gold_var = next((k for k, v in self.var_types.items() if "gold" == v.lower()), None)
             
             if gold_var and self.variables[gold_var] >= weapon.value:
                 self.variables[gold_var] -= weapon.value
@@ -137,7 +142,7 @@ class StoryEngine:
                 self.inventory.append(treasure)
                 
                 # auto decrease strength based on weight
-                strength_var = next((k for k in self.variables.keys() if "snaga" in k.lower() or "strength" in k.lower()), None)
+                strength_var = next((k for k, v in self.variables.items() if "strength" == k.lower()), None)
                 if strength_var:
                     self.variables[strength_var] = max(0, self.variables[strength_var] - treasure.weight)
                     print(f"Taken: {treasure.name}. Strength decreased by {treasure.weight}.")
@@ -179,8 +184,8 @@ class StoryEngine:
     def choose_fight_option(self, choice):
         fight = self.current_room.fight
         b_min, b_max = next((v for k, v in self.hit_ranges.items() if k != fight.hr.name))
-        player_hp_key = next(k for k in self.variables.keys() if "snaga" in k.lower() or "strength" in k.lower())
-        boss_hp_key = next(k for k in self.variables.keys() if "hp" in k.lower())
+        player_hp_key = next(k for k, v in self.var_types.items() if "strength" == v.lower())
+        boss_hp_key = next(k for k,v in self.var_types.items() if "bossstrength" == v.lower())
 
         if choice == 0:
             p_min, p_max = self.hit_ranges.get(fight.hr.name, (1, 10))

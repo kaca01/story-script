@@ -8,7 +8,12 @@ export interface StoryState {
 
 export interface PlayerStats {
   stats: Record<string, number>;
-  inventory: string[];
+  inventory: Inventory[];
+}
+
+export interface Inventory {
+  name: string;
+  hp: number;
 }
 
 export interface StoryOption {

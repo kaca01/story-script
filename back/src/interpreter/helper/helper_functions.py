@@ -92,10 +92,10 @@ def parse_object_to_dict(obj, seen=None):
 
 
 def parse_option_to_dict(option, context_vars):
-        return {
-            'text': option.text,
-            'action': action_to_dict(option.action, context_vars)
-        }
+    return {
+        'text': option.text,
+        'action': action_to_dict(option.action, context_vars)
+    }
 
 
 def get_exp_effects(assignment, context_vars):
