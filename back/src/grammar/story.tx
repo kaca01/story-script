@@ -66,7 +66,7 @@ Action:
 ;
 
 Buy:
-    'buy' item=[Weapon]  // TODO: from engine take the gold
+    'buy' item=[Weapon]
 ;
 
 Take:
