@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StoryService } from '../../../services/core/story.service';
-import { StoryOption, StoryState } from '../../../models';
+import { StoryState } from '../../../models';
 import { PlayerHudComponent } from "../../player-hud/player-hud.component";
 
 @Component({

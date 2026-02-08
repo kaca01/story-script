@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { StoryOption, StoryState } from "../../models";
+import { StoryState } from "../../models";
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 

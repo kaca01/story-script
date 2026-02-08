@@ -13,7 +13,6 @@ export interface PlayerStats {
 
 export interface StoryOption {
   text: string;
-  room: string;
   action: StoryAction | null;
 }
 

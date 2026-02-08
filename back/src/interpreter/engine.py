@@ -5,11 +5,12 @@ class StoryEngine:
     def __init__(self):
         self.variables = {}
         self.weapons = []
-        self.inventory = []
+        self.inventory = []  # treasures 
         self.hit_ranges = {}
         self.current_room = None
         self.available_options = []
         self.model = None
+        self.fight_mode = False
 
 
     def interpret(self, model):
@@ -153,54 +154,57 @@ class StoryEngine:
                     for asn in rule.assignments:
                         res = evaluate_expression(asn.exp, self.variables)
                         self.variables[asn.varName.name] = max(0, res)
+     
+     
+    def build_fight_options(self):
+        self.fight_mode = True
+        options = []
+        fight = self.current_room.fight
+        hr = fight.hr.name
+        p_min, p_max = self.hit_ranges.get(hr, (1, 10))
+        options.append({
+            "text": f"Punch ({p_min}–{p_max} damage)",
+            "action": None,
+        })
+
+        for w in self.weapons:
+            options.append({
+                "text": f"Use {w.name} (+{w.hp} damage, breaks)",
+                "action": None
+            })
+
+        return options
 
 
-    def resolve_fight(self, fight):
-        boss_hp_key = next(k for k in self.variables.keys() if "hp" in k.lower())
+    def choose_fight_option(self, choice):
+        fight = self.current_room.fight
+        b_min, b_max = next((v for k, v in self.hit_ranges.items() if k != fight.hr.name))
         player_hp_key = next(k for k in self.variables.keys() if "snaga" in k.lower() or "strength" in k.lower())
-        
-        b_min, b_max = (1, 5) 
+        boss_hp_key = next(k for k in self.variables.keys() if "hp" in k.lower())
 
-        print(f"\n--- COMBAT BEGINS: {fight.hr.name} ---")
-        
-        while self.variables[boss_hp_key] > 0 and self.variables[player_hp_key] > 0:
-            print(f"\nYour HP: {self.variables[player_hp_key]} | Boss HP: {self.variables[boss_hp_key]}")
-            print("Choose your attack:")
-            print("0. Punch (Random dmg based on hit_range)")
-            
-            for i, w in enumerate(self.weapons, 1):
-                print(f"{i}. Use {w.name} (+{w.hp} dmg, one-time use)")
-            
-            try:
-                choice = int(input("Your choice: "))
-                damage_to_boss = 0
-                if choice == 0:
-                    p_min, p_max = self.hit_ranges.get(fight.hr.name, (1, 10))
-                    damage_to_boss = random.randint(p_min, p_max)
-                    print(f"You punched the boss for {damage_to_boss} dmg!")
-                elif 0 < choice <= len(self.weapons):
-                    used_weapon = self.weapons.pop(choice - 1)
-                    damage_to_boss = used_weapon.hp
-                    print(f"You swung your {used_weapon.name} for {damage_to_boss} dmg! The weapon broke.")
-                else:
-                    print("You missed due to an invalid choice!")
-
-                self.variables[boss_hp_key] = max(0, self.variables[boss_hp_key] - damage_to_boss)
-
-                if self.variables[boss_hp_key] <= 0:
-                    print("The boss has been defeated!")
-                    break
-
-                damage_from_boss = random.randint(b_min, b_max)
-                self.variables[player_hp_key] = max(0, self.variables[player_hp_key] - damage_from_boss)
-                print(f"The boss hit you for {damage_from_boss} dmg!")
-
-            except ValueError:
-                print("Please enter a valid number!")
-
-        if self.variables[player_hp_key] > 0:
-            self.current_room = fight.winRoom
+        if choice == 0:
+            p_min, p_max = self.hit_ranges.get(fight.hr.name, (1, 10))
+            damage_to_boss = random.randint(p_min, p_max)
+            print(f"You punched the boss for {damage_to_boss} damage!")
+        elif 0 < choice <= len(self.weapons):
+            used_weapon = self.weapons.pop(choice - 1)
+            damage_to_boss = used_weapon.hp
+            print(f"You swung your {used_weapon.name} for {damage_to_boss} damage! The weapon broke.")
         else:
+            print("You missed due to an invalid choice!")
+
+        self.variables[boss_hp_key] = max(0, self.variables[boss_hp_key] - damage_to_boss)
+
+        if self.variables[boss_hp_key] <= 0:
+            print("The boss has been defeated!")
+            self.fight_mode = False
+            self.current_room = fight.winRoom
+            
+        damage_from_boss = random.randint(b_min, b_max)
+        self.variables[player_hp_key] = max(0, self.variables[player_hp_key] - damage_from_boss)
+        print(f"The boss hit you for {damage_from_boss} dmg!")
+        if self.variables[player_hp_key] <= 0:
+            print("You lost!")
+            self.fight_mode = False
             self.current_room = fight.loseRoom
-        
-        self.refresh_room_state()
+            

@@ -94,7 +94,6 @@ def parse_object_to_dict(obj, seen=None):
 def parse_option_to_dict(option, context_vars):
         return {
             'text': option.text,
-            'room': option.target.name,
             'action': action_to_dict(option.action, context_vars)
         }
 
@@ -136,4 +135,10 @@ def action_to_dict(action, context_vars):
             }
             for r in getattr(action, "rules", [])
         ]
+    }
+
+def inventory_to_dict(inventory_item):
+    return {
+        "name": inventory_item.name,
+        "hp": inventory_item.hp
     }
