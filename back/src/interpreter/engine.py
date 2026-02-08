@@ -148,10 +148,7 @@ class StoryEngine:
             if hasattr(action, 'assignments'):
                 for asn in action.assignments:
                     res = evaluate_expression(asn.exp, self.variables)
-                    print(f"resssss: {res}")
-                    print(f"Before assignment: {asn.varName.name} = {self.variables[asn.varName.name]}")
                     self.variables[asn.varName.name] = max(0, res)
-                    print(f"After assignment: {asn.varName.name} = {self.variables[asn.varName.name]}")
 
             # for global rules
             if hasattr(action, 'rules'):
