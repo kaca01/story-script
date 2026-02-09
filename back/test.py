@@ -30,7 +30,6 @@ def run_console_game():
                     print("Please enter a valid number.")
                 continue
 
-            # Standardni prikaz sobe (van borbe)
             print(f"\nLocation: {room.name}")
             print(f"Description: {room.body}")
             print(f"Stats: {engine.variables}")

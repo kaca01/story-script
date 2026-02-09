@@ -5,7 +5,7 @@ class StoryEngine:
     def __init__(self):
         self.variables = {}
         self.weapons = []
-        self.treasures = []  # treasures 
+        self.treasures = []
         self.hit_ranges = {}
         self.current_room = None
         self.available_options = []
@@ -34,6 +34,8 @@ class StoryEngine:
         print("*" * (len(adventure_name) + 20))
 
         # RESET
+        self.fight_mode = False
+
         self.variables = {}
         for var in self.model.variables:
             self.var_types[var.name] = type(var).__name__
