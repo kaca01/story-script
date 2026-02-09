@@ -59,7 +59,7 @@ room Ulaz {
 room HodnikIskusenja {
     imagePath "hodnik.png"
     header "Hodnik Iskušenja"
-    body "Pod je prekriven zlatnicima, ali vazduh je težak i iscrpljuje vas. Tvoja snaga: {snaga}."
+    body "Pod je prekriven zlatnicima, ali vazduh je težak i iscrpljuje vas."
 
     option "Pokupi Zlatnu Masku (+150 zlata, -7 snage)"
         take ZlatnaMaske
@@ -78,7 +78,7 @@ room HodnikIskusenja {
 room OltarSudbine {
     imagePath "oltar.png"
     header "Oltar Sudbine"
-    body "Ovaj oltar ne prima zlato, već traži veru. Možeš dobiti veliku sreću ili izgubiti tlo pod nogama."
+    body "Ovaj oltar traži veru. Možeš dobiti veliku sreću ili izgubiti tlo pod nogama."
 
     // Kockanje sa srecom - direktno utiče na formulu napada u BossAreni
     option "Moli se za sreću (Random -5 ili +15)"
@@ -111,7 +111,7 @@ room IshodMolitve {
 room Predvorje {
     imagePath "trgovac.png"
     header "Dvorana Trgovca"
-    body "Poslednja stanica. Ovde tvoje sakupljeno zlato dobija smisao. Tvoje zlato: {zlato}."
+    body "Poslednja stanica pre arene."
 
     option "Kupi Štit (-10 zlata)"
         [zlato >= 10]
@@ -130,7 +130,7 @@ room Predvorje {
 room BossArena {
     imagePath "arena.png"
     header "Finalni Obračun"
-    body "Džinovski kameni čuvar se budi! Boss HP: {boss_hp}. Tvoja Snaga: {snaga}. Bonus Sreće: {sreca * 0.1}."
+    body "Džinovski kameni čuvar se budi!"
 
     fight "UDARI BOSS-A"
         player_hit_range
@@ -147,7 +147,7 @@ room BossArena {
 room Pobeda {
     imagePath "pobeda.png"
     header "Pobeda!"
-    body "Čuvar se srušio! Izlaziš iz hrama sa {zlato} zlata i legendarnom slavom."
+    body "Čuvar se srušio! Izlaziš iz hrama sa legendarnom slavom."
 
     option "Predji na sledeću avanturu"
         next SledecaMisija // moze se uvezati vise  avantura
