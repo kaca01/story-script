@@ -8,7 +8,7 @@ Projekat obuhvata razvoj meta-modela (gramatike), statičku analizu ispravnosti 
 - Python 3.x
 - textX: Alat za definisanje gramatike i generisanje meta-modela
 - Angular: Framework zadužen za vizuelni prikaz i interakciju korisnika sa igrom
-- LSP (Language Server Protocol): Omogućava podršku unutar VS Code editora za specifični jezik, uključujući syntax highlighting, error chacking, autocomplite, go to definition
+- LSP (Language Server Protocol): Omogućava podršku unutar VS Code editora za specifični jezik, uključujući syntax highlighting, error chacking, autocomplite, go to definition, hover informacija
 
 ## 3. Primjer
 ```
