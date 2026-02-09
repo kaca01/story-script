@@ -90,7 +90,7 @@ Factor:
     random=Random
   | value=INT
   | var=[Variable]
-  | '(' Expression ')'
+  | '(' inner=Expression ')'
 ;
 
 AddOp:

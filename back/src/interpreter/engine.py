@@ -5,7 +5,7 @@ class StoryEngine:
     def __init__(self):
         self.variables = {}
         self.weapons = []
-        self.inventory = []  # treasures 
+        self.treasures = []  # treasures 
         self.hit_ranges = {}
         self.current_room = None
         self.available_options = []
@@ -33,17 +33,15 @@ class StoryEngine:
         print(f"*** WELCOME TO: {adventure_name} ***")
         print("*" * (len(adventure_name) + 20))
 
-        # 1. Reset global variables to values from the .story file
+        # RESET
         self.variables = {}
         for var in self.model.variables:
             self.var_types[var.name] = type(var).__name__
             self.variables[var.name] = var.value
             
-        # 2. Clear inventory and weapons
         self.weapons = []
-        self.inventory = []
-        
-        # 3. Return to the first room
+        self.treasures = []
+
         self.current_room = self.model.rooms[0]
         self.refresh_room_state()
 
@@ -119,36 +117,36 @@ class StoryEngine:
         if action == "restart":
             self.reset_game_state()
             return
+        
+        gold = next((name for name, v_type in self.var_types.items() if v_type.lower() == "gold"), None)
+        strength = next((name for name, v_type in self.var_types.items() if v_type.lower() == "strength"), None)
 
         # BUY WEAPON
         if hasattr(action, 'item') and action.__class__.__name__ == "Buy":
-            weapon = action.item
-            gold_var = next((k for k, v in self.var_types.items() if "gold" == v.lower()), None)
-            
-            if gold_var and self.variables[gold_var] >= weapon.value:
-                self.variables[gold_var] -= weapon.value
+            weapon = action.item            
+            if gold and self.variables[gold] >= weapon.value:
+                self.variables[gold] -= weapon.value
                 self.weapons.append(weapon)
-                print(f"Purchased: {weapon.name}. Remaining gold: {self.variables[gold_var]}")
+                print(f"Purchased: {weapon.name}. Remaining gold: {self.variables[gold]}")
             else:
                 print("Not enough gold!")
 
         # TAKE TREASURE
         elif hasattr(action, 'item') and action.__class__.__name__ == "Take":
             treasure = action.item
-            if treasure.name not in [t.name for t in self.inventory]:
-                self.inventory.append(treasure)
-                
-                # auto decrease strength based on weight
-                strength_var = next((k for k, v in self.variables.items() if "strength" == k.lower()), None)
-                if strength_var:
-                    self.variables[strength_var] = max(0, self.variables[strength_var] - treasure.weight)
-                    print(f"Taken: {treasure.name}. Strength decreased by {treasure.weight}.")
+            self.treasures.append(treasure)
+            
+            # auto decrease strength based on weight
+            if strength:
+                self.variables[strength] = max(0, self.variables[strength] - treasure.weight)
+                print(f"Taken: {treasure.name}. Strength decreased by {treasure.weight}.")
 
             # for 'set' commands
             if hasattr(action, 'assignments'):
                 for asn in action.assignments:
                     res = evaluate_expression(asn.exp, self.variables)
                     self.variables[asn.varName.name] = max(0, res)
+                    
 
             # for global rules
             if hasattr(action, 'rules'):

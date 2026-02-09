@@ -18,37 +18,38 @@ def parse_operator(op):
 
 
 def evaluate_expression(exp, context_vars):
-    if hasattr(exp, 'op') and len(exp.op) > 0:
-        result = evaluate_expression(exp.left, context_vars)
+    if exp is None: return 0
 
-        for op, right in zip(exp.op, exp.right):
-            if op == '+':
-                result += evaluate_expression(right, context_vars)
-            elif op == '-':
-                result -= evaluate_expression(right, context_vars)
-            elif op == '*':
-                result *= evaluate_expression(right, context_vars)
-            elif op == '/':
-                result /= evaluate_expression(right, context_vars)
-        return result
-    
-    if hasattr(exp, 'random') and exp.random:
-        start = getattr(exp.random, 'from_', getattr(exp.random, 'from', 0))
-        end = exp.random.to
-        return random.randint(start, end)
+    if isinstance(exp, (int, float)): return exp
 
-    if hasattr(exp, 'left'):
-        return evaluate_expression(exp.left, context_vars)
-
-    if isinstance(exp, int):
-        return exp
+    if hasattr(exp, 'inner') and exp.inner is not None:
+        return evaluate_expression(exp.inner, context_vars)
 
     if hasattr(exp, 'var') and exp.var:
-        var_name = exp.var.name
-        return context_vars.get(var_name, 0)
+        return context_vars.get(exp.var.name, 0)
 
-    if hasattr(exp, 'value'):
-        return exp.value
+    if hasattr(exp, 'random') and exp.random:
+        first = getattr(exp.random, 'from', 0)
+        second = getattr(exp.random, 'to', 1)
+        return random.randint(first, second)
+
+    if hasattr(exp, 'op') and exp.op:
+        result = evaluate_expression(exp.left, context_vars)
+        
+        for op, right in zip(exp.op, exp.right):
+            right_side = evaluate_expression(right, context_vars)
+            
+            if op == '+': result += right_side
+            elif op == '-': result -= right_side
+            elif op == '*': result *= right_side
+            elif op == '/': result = result // right_side if right_side != 0 else 0
+        return result
+
+    if hasattr(exp, 'left') and exp.left is not None:
+        return evaluate_expression(exp.left, context_vars)
+
+    if hasattr(exp, 'value') and exp.value is not None:
+        return exp.value if isinstance(exp.value, (int, float)) else evaluate_expression(exp.value, context_vars)
 
     return 0
 
