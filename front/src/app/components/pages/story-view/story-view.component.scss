@@ -1,0 +1,37 @@
+.story-container {
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 2rem;
+  font-family: system-ui, sans-serif;
+}
+
+.story-header {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.story-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+}
+
+.story-body {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  button {
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+}
