@@ -21,6 +21,9 @@ weapon SvetiGral value 30 hit_points 10
 treasure Dijamant weight 5
 treasure MisteriozniPoklon weight 3
 treasure ZlatnaMaske weight 7
+treasure SkriveniKljuc weight 2
+treasure StariSvitak weight 3
+treasure SrebrniNovcic weight 1
 
 // rooms
 room Ulaz {
@@ -66,8 +69,8 @@ room OltarSudbine {
     header "Oltar Sudbine"
     body "Ovaj oltar traži veru."
 
-    option "Moli se za sreću"
-        take MisteriozniPoklon
+    option "Moli se za sreću i uzmi Skriveni ključ (-2 snage)"
+        take SkriveniKljuc
             set sreca = random(1, 2)
         goto IshodMolitve;
 
@@ -80,15 +83,15 @@ room IshodMolitve {
     header "Glas Bogova"
     body "Osetili ste promenu u svojoj auri."
 
-    option "Blagoslovljen si! (+15 sreće)"
+    option "Blagoslovljen si i dobijas Stari Svitak! (+15 sreće, -3 snage)"
         [sreca == 1]
-        take Dijamant
+        take StariSvitak
             set sreca = sreca + 15
         goto Predvorje;
 
-    option "Proklet si! (sreća == 1)"
+    option "Proklet si, ali za utehu dobijas Srebrni novčić! (sreća = 1, -1 snaga)"
         [sreca == 2]
-        take Dijamant
+        take SrebrniNovcic
             set sreca = 1
         goto Predvorje;
 }
