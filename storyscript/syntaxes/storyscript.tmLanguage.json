@@ -1,0 +1,71 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "StoryScript",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#declarations" },
+        { "include": "#control_flow" },
+        { "include": "#actions" },
+        { "include": "#entities" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#operators" },
+        { "include": "#functions" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [{
+                "name": "comment.line.double-slash.story",
+                "match": "//.*$"
+            }]
+        },
+        "declarations": {
+            "patterns": [{
+                "name": "keyword.declaration.story",
+                "match": "\\b(adventure|room|rule|define|strength|gold|luck|boss_strength|weapon|treasure)\\b"
+            }]
+        },
+        "entities": {
+            "patterns": [{
+                "name": "entity.other.attribute-name.story",
+                "match": "\\b(imagePath|header|body|value|hit_points|weight)\\b"
+            }]
+        },
+        "control_flow": {
+            "patterns": [{
+                "name": "keyword.control.story",
+                "match": "\\b(goto|win|lose|restart|option|fight)\\b"
+            }]
+        },
+        "actions": {
+            "patterns": [{
+                "name": "keyword.other.action.story",
+                "match": "\\b(take|buy|set)\\b"
+            }]
+        },
+        "functions": {
+            "patterns": [{
+                "name": "support.function.story",
+                "match": "\\b(random)\\b"
+            }]
+        },
+        "strings": {
+            "name": "string.quoted.double.story",
+            "begin": "\"",
+            "end": "\""
+        },
+        "numbers": {
+            "patterns": [{
+                "name": "constant.numeric.story",
+                "match": "\\b\\d+\\b"
+            }]
+        },
+        "operators": {
+            "patterns": [{
+                "name": "keyword.operator.story",
+                "match": "(>|<|==|>=|<=|=|\\+|\\-|\\*|/)"
+            }]
+        }
+    },
+    "scopeName": "source.story"
+}
