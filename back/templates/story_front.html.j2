@@ -72,8 +72,10 @@
     const state = {
       currentRoom: storyData.rooms[0].name,
       variables: { ...storyData.variables },
-      inventory: [],
+      weapons: [],
+      treasures: [],
       fightMode: false,
+      goldVar: Object.entries(storyData.varTypes).find(([, type]) => type === 'gold')?.[0] || 'gold',
       bossHpVar: storyData.bossStrengthVar,
       playerStrVar: storyData.playerStrengthVar,
       statusText: 'Dobrodošli u avanturu!'
@@ -149,19 +151,25 @@
           state.statusText = `Ne postoji oružje ${action.item}.`;
           return;
         }
-        if ((state.variables.gold || 0) < weapon.value) {
-          state.statusText = 'Nemaš dovoljno zlata za ovu kupovinu.';
+        const goldKey = state.goldVar;
+        const currentGold = state.variables[goldKey] || 0;
+        console.log('goldKey=', goldKey, 'gold=', currentGold, 'weapon.value=', weapon.value);
+        if (currentGold < weapon.value) {
+          state.statusText = `Nemaš dovoljno zlata za ovu kupovinu. (${currentGold} < ${weapon.value})`;
           return;
         }
-        state.variables.gold -= weapon.value;
-        state.inventory.push({ name: weapon.name, hp: weapon.hp });
+        state.variables[goldKey] = currentGold - weapon.value;
+        state.weapons.push(weapon);
         state.statusText = `Kupljen je ${weapon.name}.`; 
       }
       if (action.type === 'take') {
         if (action.item) {
+          const weapon = storyData.weapons.find(w => w.name === action.item);
           const treasure = storyData.treasures.find(t => t.name === action.item);
-          if (treasure) {
-            state.inventory.push({ name: treasure.name, hp: treasure.weight });
+          if (weapon) {
+            state.weapons.push(weapon);
+          } else if (treasure) {
+            state.treasures.push(treasure);
             const playerStrength = state.playerStrVar;
             if (playerStrength && state.variables[playerStrength] != null) {
               state.variables[playerStrength] = Math.max(0, state.variables[playerStrength] - treasure.weight);
@@ -169,7 +177,6 @@
           }
         }
         applyAssignments(action.assignments);
-        applyRules(action.rules);
       }
       if (action.randoms) {
         for (const randomAssign of action.randoms) {
@@ -181,7 +188,8 @@
     function restartAdventure() {
       state.currentRoom = storyData.rooms[0].name;
       state.variables = { ...storyData.variables };
-      state.inventory = [];
+      state.weapons = [];
+      state.treasures = [];
       state.fightMode = false;
       state.statusText = 'Avantura je resetovana.';
     }
@@ -198,8 +206,8 @@
       const options = [
         { text: `Udari (${hrRange.from}-${hrRange.to} dmg)`, type: 'punch' }
       ];
-      for (const item of state.inventory) {
-        options.push({ text: `Koristi ${item.name} (+${item.hp} dmg)`, type: 'weapon', weapon: item });
+      for (const weapon of state.weapons) {
+        options.push({ text: `Koristi ${weapon.name} (+${weapon.hp} dmg)`, type: 'weapon', weapon: weapon });
       }
       return options;
     }
@@ -217,7 +225,7 @@
         damageToBoss = randInt(hr.from, hr.to);
       } else if (choice.type === 'weapon') {
         damageToBoss = choice.weapon.hp;
-        state.inventory = state.inventory.filter(inv => inv !== choice.weapon);
+        state.weapons = state.weapons.filter(w => w !== choice.weapon);
       }
       state.variables[bossStrengthKey] = Math.max(0, (state.variables[bossStrengthKey] || 0) - damageToBoss);
       const bossHitRange = Object.entries(storyData.hitRanges).find(([name]) => name !== fight.hr)?.[1] || { from: 1, to: 1 };
@@ -261,13 +269,21 @@
 
       const inventoryList = document.getElementById('inventoryList');
       inventoryList.innerHTML = '';
-      if (state.inventory.length === 0) {
+      
+      // Show weapons and treasures
+      const allItems = [
+        ...state.weapons.map(w => ({ name: w.name, value: w.hp, type: 'weapon' })),
+        ...state.treasures.map(t => ({ name: t.name, value: t.weight, type: 'treasure' }))
+      ];
+      
+      if (allItems.length === 0) {
         inventoryList.innerHTML = '<div class="inventory-item">Prazan inventar</div>';
       } else {
-        state.inventory.forEach(item => {
+        allItems.forEach(item => {
           const inv = document.createElement('div');
           inv.className = 'inventory-item';
-          inv.innerHTML = `<span>${item.name}</span><span>HP ${item.hp}</span>`;
+          const label = item.type === 'weapon' ? 'HP' : 'Weight';
+          inv.innerHTML = `<span>${item.name}</span><span>${label} ${item.value}</span>`;
           inventoryList.appendChild(inv);
         });
       }
